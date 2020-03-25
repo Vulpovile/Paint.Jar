@@ -123,6 +123,7 @@ public class ColorBar extends JPanel implements ActionListener, MouseListener, W
 		{
 			setSecondary(((Component) arg0.getSource()).getBackground());
 		}
+		recolorDialog();
 		panel.revalidate();
 	}
 
@@ -200,6 +201,7 @@ public class ColorBar extends JPanel implements ActionListener, MouseListener, W
 		Color temp = primary;
 		primary = secondary;
 		secondary = temp;
+		recolorDialog();
 		repaint();
 	}
 

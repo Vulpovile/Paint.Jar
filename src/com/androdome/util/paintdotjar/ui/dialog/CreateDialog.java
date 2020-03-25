@@ -1,7 +1,6 @@
 package com.androdome.util.paintdotjar.ui.dialog;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 
@@ -22,8 +21,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-
-import java.awt.Panel;
 
 import javax.swing.border.BevelBorder;
 

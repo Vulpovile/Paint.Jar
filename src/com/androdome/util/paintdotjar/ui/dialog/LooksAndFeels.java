@@ -20,7 +20,6 @@ import javax.swing.JList;
 import javax.swing.JCheckBox;
 
 import com.androdome.util.paintdotjar.MainInterface;
-import com.androdome.util.paintdotjar.ui.CanvasContainer;
 
 public class LooksAndFeels extends JDialog {
 
