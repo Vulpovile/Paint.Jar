@@ -94,7 +94,7 @@ public class CreateDialog extends JDialog {
 						{
 							cc.manager.getSelectedCanvas().getGraphics().drawImage(image, 0, 0, null);
 						}
-						else if(!comboBox.getSelectedItem().toString().toLowerCase().trim().equals("ransparent"))
+						else if(!comboBox.getSelectedItem().toString().toLowerCase().trim().equals("transparent"))
 						{
 							Graphics g = cc.manager.getSelectedCanvas().getGraphics();
 							String comboValue = comboBox.getSelectedItem().toString().toLowerCase().trim();
@@ -106,6 +106,7 @@ public class CreateDialog extends JDialog {
 								g.setColor(colorPanel.getPrimary());
 							else if(comboValue.equals("from secondary"))
 								g.setColor(colorPanel.getSecondary());
+							else g.setColor(new Color(0,0,0,0));
 							g.fillRect(0, 0, cc.manager.getImage().getWidth(), cc.manager.getImage().getHeight());
 						}
 						mainInterface.setCanvasContainer(cc);
