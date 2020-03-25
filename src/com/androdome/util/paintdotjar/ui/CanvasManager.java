@@ -1,4 +1,4 @@
-package ca.limeware.masteroffice.paintmaster.ui;
+package com.androdome.util.paintdotjar.ui;
 
 import java.awt.AWTException;
 import java.awt.Color;
@@ -9,7 +9,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 
-import ca.limeware.masteroffice.paintmaster.Canvas;
+import com.androdome.util.paintdotjar.Canvas;
 
 public class CanvasManager {
 

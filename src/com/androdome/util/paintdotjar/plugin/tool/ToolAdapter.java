@@ -1,11 +1,11 @@
-package ca.limeware.masteroffice.paintmaster.plugin.tool;
+package com.androdome.util.paintdotjar.plugin.tool;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
-import ca.limeware.masteroffice.paintmaster.plugin.JavaPlugin;
-import ca.limeware.masteroffice.paintmaster.ui.CanvasManager;
+import com.androdome.util.paintdotjar.plugin.JavaPlugin;
+import com.androdome.util.paintdotjar.ui.CanvasManager;
 
 public abstract class ToolAdapter extends Tool{
 	

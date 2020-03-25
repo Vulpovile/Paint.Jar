@@ -1,4 +1,4 @@
-package ca.limeware.masteroffice.paintmaster.plugin.event;
+package com.androdome.util.paintdotjar.plugin.event;
 
 public abstract class Event {
 	protected Type evtType;

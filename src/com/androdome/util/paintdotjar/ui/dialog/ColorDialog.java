@@ -1,4 +1,4 @@
-package ca.limeware.masteroffice.paintmaster.ui.dialog;
+package com.androdome.util.paintdotjar.ui.dialog;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -16,10 +16,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-import ca.limeware.masteroffice.paintmaster.ui.ColorBar;
-import ca.limeware.masteroffice.paintmaster.ui.ColorWheel;
-
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -27,6 +23,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.JSlider;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
+
+import com.androdome.util.paintdotjar.ui.ColorBar;
+import com.androdome.util.paintdotjar.ui.ColorWheel;
 
 public class ColorDialog extends JDialog implements ActionListener, ChangeListener, KeyListener, FocusListener, MouseListener, MouseMotionListener{
 	/**

@@ -1,4 +1,4 @@
-package ca.limeware.masteroffice.paintmaster.plugin;
+package com.androdome.util.paintdotjar.plugin;
 
 import java.awt.Image;
 import java.io.BufferedReader;
@@ -12,10 +12,10 @@ import java.util.HashMap;
 
 import javax.swing.JToolBar;
 
-import ca.limeware.masteroffice.paintmaster.MainInterface;
-import ca.limeware.masteroffice.paintmaster.plugin.event.Event;
-import ca.limeware.masteroffice.paintmaster.plugin.event.EventListener;
-import ca.limeware.masteroffice.paintmaster.plugin.tool.Tool;
+import com.androdome.util.paintdotjar.MainInterface;
+import com.androdome.util.paintdotjar.plugin.event.Event;
+import com.androdome.util.paintdotjar.plugin.event.EventListener;
+import com.androdome.util.paintdotjar.plugin.tool.Tool;
 
 
 

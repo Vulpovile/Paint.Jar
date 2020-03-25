@@ -1,4 +1,4 @@
-package ca.limeware.masteroffice.paintmaster;
+package com.androdome.util.paintdotjar;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -23,13 +23,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import ca.limeware.masteroffice.paintmaster.plugin.PluginManager;
-import ca.limeware.masteroffice.paintmaster.plugin.RegisteredTool;
-import ca.limeware.masteroffice.paintmaster.ui.CanvasContainer;
-import ca.limeware.masteroffice.paintmaster.ui.ColorBar;
-import ca.limeware.masteroffice.paintmaster.ui.dialog.CreateDialog;
-import ca.limeware.masteroffice.paintmaster.ui.dialog.LooksAndFeels;
-
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,6 +40,13 @@ import java.awt.FlowLayout;
 import javax.swing.JSlider;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
+
+import com.androdome.util.paintdotjar.plugin.PluginManager;
+import com.androdome.util.paintdotjar.plugin.RegisteredTool;
+import com.androdome.util.paintdotjar.ui.CanvasContainer;
+import com.androdome.util.paintdotjar.ui.ColorBar;
+import com.androdome.util.paintdotjar.ui.dialog.CreateDialog;
+import com.androdome.util.paintdotjar.ui.dialog.LooksAndFeels;
 
 public class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener {
 

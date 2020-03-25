@@ -1,4 +1,4 @@
-package ca.limeware.masteroffice.paintmaster.ui;
+package com.androdome.util.paintdotjar.ui;
 
 import java.awt.Color;
 import java.awt.Graphics;

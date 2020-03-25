@@ -1,4 +1,4 @@
-package ca.limeware.masteroffice.paintmaster.properties;
+package com.androdome.util.paintdotjar.properties;
 
 import java.util.ArrayList;
 

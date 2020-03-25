@@ -1,9 +1,10 @@
-package ca.limeware.masteroffice.paintmaster.ui;
+package com.androdome.util.paintdotjar.ui;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import ca.limeware.masteroffice.paintmaster.ui.dialog.ColorDialog;
+
+import com.androdome.util.paintdotjar.ui.dialog.ColorDialog;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;

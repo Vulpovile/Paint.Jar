@@ -1,4 +1,4 @@
-package ca.limeware.masteroffice.paintmaster.ui.dialog;
+package com.androdome.util.paintdotjar.ui.dialog;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -23,15 +23,15 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 
-import ca.limeware.masteroffice.paintmaster.ClipboardImage;
-import ca.limeware.masteroffice.paintmaster.MainInterface;
-import ca.limeware.masteroffice.paintmaster.plugin.PluginManager;
-import ca.limeware.masteroffice.paintmaster.ui.CanvasContainer;
-import ca.limeware.masteroffice.paintmaster.ui.ColorBar;
-
 import java.awt.Panel;
 
 import javax.swing.border.BevelBorder;
+
+import com.androdome.util.paintdotjar.ClipboardImage;
+import com.androdome.util.paintdotjar.MainInterface;
+import com.androdome.util.paintdotjar.plugin.PluginManager;
+import com.androdome.util.paintdotjar.ui.CanvasContainer;
+import com.androdome.util.paintdotjar.ui.ColorBar;
 
 public class CreateDialog extends JDialog {
 

@@ -1,4 +1,4 @@
-package ca.limeware.masteroffice.paintmaster.ui;
+package com.androdome.util.paintdotjar.ui;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -18,8 +18,8 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import ca.limeware.masteroffice.paintmaster.Canvas;
-import ca.limeware.masteroffice.paintmaster.plugin.PluginManager;
+import com.androdome.util.paintdotjar.Canvas;
+import com.androdome.util.paintdotjar.plugin.PluginManager;
 
 public class CanvasContainer extends JPanel implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener{
 

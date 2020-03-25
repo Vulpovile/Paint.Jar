@@ -1,8 +1,8 @@
-package ca.limeware.masteroffice.paintmaster.plugin;
+package com.androdome.util.paintdotjar.plugin;
 
 import java.io.File;
 
-import ca.limeware.masteroffice.paintmaster.MainInterface;
+import com.androdome.util.paintdotjar.MainInterface;
 
 
 public abstract class JavaPlugin {

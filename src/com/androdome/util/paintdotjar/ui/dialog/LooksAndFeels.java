@@ -1,4 +1,4 @@
-package ca.limeware.masteroffice.paintmaster.ui.dialog;
+package com.androdome.util.paintdotjar.ui.dialog;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -17,11 +17,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
-
-import ca.limeware.masteroffice.paintmaster.MainInterface;
-import ca.limeware.masteroffice.paintmaster.ui.CanvasContainer;
-
 import javax.swing.JCheckBox;
+
+import com.androdome.util.paintdotjar.MainInterface;
+import com.androdome.util.paintdotjar.ui.CanvasContainer;
 
 public class LooksAndFeels extends JDialog {
 

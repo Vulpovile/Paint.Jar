@@ -1,4 +1,4 @@
-package ca.limeware.masteroffice.paintmaster;
+package com.androdome.util.paintdotjar;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;

@@ -1,7 +1,7 @@
-package ca.limeware.masteroffice.paintmaster.plugin;
+package com.androdome.util.paintdotjar.plugin;
 
-import ca.limeware.masteroffice.paintmaster.plugin.event.Event;
-import ca.limeware.masteroffice.paintmaster.plugin.event.EventListener;
+import com.androdome.util.paintdotjar.plugin.event.Event;
+import com.androdome.util.paintdotjar.plugin.event.EventListener;
 
 
 
