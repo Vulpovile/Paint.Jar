@@ -50,7 +50,7 @@ public class CanvasContainer extends JPanel implements MouseListener, MouseMotio
 		return this.scale;
 	}
 	
-	public CanvasRenderMode canvasRenderMode = CanvasRenderMode.NORMAL;
+	public CanvasRenderMode canvasRenderMode = CanvasRenderMode.TILEDRAW;
 	/**
 	 * 
 	 */
@@ -157,7 +157,7 @@ public class CanvasContainer extends JPanel implements MouseListener, MouseMotio
 					g.fillRect(i, j, pscale, pscale);
 				}
 			}*/
-			
+			/*//Broken!
 			int pscale = (int) (width*scale/100);
 			boolean offset = false;
 			boolean inset = false;
@@ -176,7 +176,7 @@ public class CanvasContainer extends JPanel implements MouseListener, MouseMotio
 					g.fillRect(i, j, xpscale, ypscale); //wtf is going on
 				}
 			}
-			
+			*/
 			g.setColor(Color.BLACK);
 			for(int i = 0; i < layers.size(); i++)
 			{
