@@ -46,6 +46,7 @@ import com.androdome.util.paintdotjar.ui.CanvasContainer;
 import com.androdome.util.paintdotjar.ui.ColorBar;
 import com.androdome.util.paintdotjar.ui.dialog.CreateDialog;
 import com.androdome.util.paintdotjar.ui.dialog.LooksAndFeels;
+import javax.swing.JButton;
 
 public class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener {
 
@@ -75,6 +76,7 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		System.setProperty("sun.java2d.opengl", "true");
 		LookAndFeelInfo[] laf = UIManager.getInstalledLookAndFeels();
 		boolean found = false;
 		for(int i = 0; i < laf.length; i++)
@@ -256,6 +258,12 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 		txtScale.setText("100.0%");
 		panel_2.add(txtScale, BorderLayout.EAST);
 		txtScale.setColumns(6);
+		
+		contentPane.add(rightSidePanel, BorderLayout.EAST);
+		rightSidePanel.setLayout(new BorderLayout(0, 0));
+		
+		rightSidePanel.add(btnHidePanel, BorderLayout.WEST);
+		btnHidePanel.setPreferredSize(new Dimension(10,-1));
 		chckbxTickMultiples.addChangeListener(this);
 		sliderScale.addChangeListener(this);
 		//Listeners
@@ -344,6 +352,8 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 
 	int icoimg = 32;
 	private JTextField txtScale;
+	private final JPanel rightSidePanel = new JPanel();
+	private final JButton btnHidePanel = new JButton("");
 	public void retool() {
 		toolBox.removeAll();
 		clearToolToolbar();

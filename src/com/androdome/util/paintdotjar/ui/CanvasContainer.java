@@ -15,12 +15,11 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import javax.swing.JPanel;
-
+import javax.swing.JComponent;
 import com.androdome.util.paintdotjar.Canvas;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 
-public class CanvasContainer extends JPanel implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener{
+public class CanvasContainer extends JComponent implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener{
 
 	ArrayList<Canvas> layers = new ArrayList<Canvas>();
 	Canvas temporaryCanvas = null;
@@ -92,10 +91,30 @@ public class CanvasContainer extends JPanel implements MouseListener, MouseMotio
 		layers.add(new Canvas(img));
 	}
 	
+	public void rescaleCanvases()
+	{
+		if(!temporaryCanvas.sizeEqual(width, height))
+		{
+			System.out.println("Temp canvas size not equal!");
+			temporaryCanvas.resizeImage(width, height, lastScaleMode);
+		}
+		for(int i = 0; i < layers.size(); i++)
+		{
+			Canvas canvas = layers.get(i);
+			if(!canvas.sizeEqual(width, height))
+			{
+				System.out.println("Size not equal!");
+				canvas.resizeImage(width, height, lastScaleMode);
+			}
+		}
+	}
+	
 	public void paintComponent(Graphics g)
 	{
-		super.paintComponent(g);
+		//super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D)g;
+		g2d.setColor(this.getBackground());
+		g2d.fillRect(0, 0, getWidth(), getHeight());
 		//g2d.fillRect(x, y, width, height);
 		int x = (int) (this.getWidth()/2 - (width*scale)/2 + xoffset);
 		int y = (int) (this.getHeight()/2 - (height*scale)/2 + yoffset);
@@ -118,11 +137,6 @@ public class CanvasContainer extends JPanel implements MouseListener, MouseMotio
 			for(int i = 0; i < layers.size(); i++)
 			{
 				Canvas canvas = layers.get(i);
-				if(!canvas.sizeEqual(width, height))
-				{
-					System.out.println("Size not equal!");
-					canvas.resizeImage(width, height, lastScaleMode);
-				}
 				//g2d.drawImage(canvas.canvasImage, x, y,width,height, this);
 				for(int xa = getLowestAfter0(x, (int) (width*scale)); xa <= this.getWidth(); xa+=width*scale)
 				{
@@ -132,11 +146,6 @@ public class CanvasContainer extends JPanel implements MouseListener, MouseMotio
 						g2d.drawImage(canvas.canvasImage, xa, ya,(int)(width*scale),(int) (height*scale), this);
 						if(tempIndex == i && temporaryCanvas != null)
 						{
-							if(!temporaryCanvas.sizeEqual(width, height))
-							{
-								System.out.println("Temp canvas size not equal!");
-								canvas.resizeImage(width, height, lastScaleMode);
-							}
 							g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, temporaryCanvas.canvasOpacity / 255F));
 							g2d.drawImage(temporaryCanvas.canvasImage, xa, ya,(int)(width*scale),(int) (height*scale), this);
 						}
@@ -181,20 +190,10 @@ public class CanvasContainer extends JPanel implements MouseListener, MouseMotio
 			for(int i = 0; i < layers.size(); i++)
 			{
 				Canvas canvas = layers.get(i);
-				if(!canvas.sizeEqual(width, height))
-				{
-					System.out.println("Size not equal!");
-					canvas.resizeImage(width, height, lastScaleMode);
-				}
 				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, canvas.canvasOpacity / 255F));
 				g2d.drawImage(canvas.canvasImage, x, y,(int)(width*scale),(int) (height*scale), this);
 				if(tempIndex == i && temporaryCanvas != null)
 				{
-					if(!temporaryCanvas.sizeEqual(width, height))
-					{
-						System.out.println("Temp canvas size not equal!");
-						canvas.resizeImage(width, height, lastScaleMode);
-					}
 					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, temporaryCanvas.canvasOpacity / 255F));
 					g2d.drawImage(temporaryCanvas.canvasImage, x, y,(int)(width*scale),(int) (height*scale), this);
 				}

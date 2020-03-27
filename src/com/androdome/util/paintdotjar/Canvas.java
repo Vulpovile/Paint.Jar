@@ -4,6 +4,10 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
@@ -13,7 +17,10 @@ public class Canvas {
 	public int canvasOpacity = 255;
 	public Canvas(int w, int h)
 	{
-		canvasImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+	    GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	    GraphicsDevice device = env.getDefaultScreenDevice();
+	    GraphicsConfiguration config = device.getDefaultConfiguration();
+		canvasImage = config.createCompatibleImage(w, h, Transparency.TRANSLUCENT);
 		Graphics g = canvasImage.getGraphics();
 		g.setColor(new Color(0,0,0,0));
 		g.fillRect(0, 0, w, h);
