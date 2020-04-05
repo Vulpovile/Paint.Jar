@@ -300,14 +300,63 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 
 	}
 
+	private void requestClose(CanvasContainer canvas) {
+		if(canvas.isChanged())
+		{
+			int retval = JOptionPane.showOptionDialog(null, "This canvas has unsaved changes!\r\nSave them before closing?", "Save", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Save", "Save As", "Discard", "Cancel"}, null);
+			System.out.println(retval);
+			if(retval == 1 || (retval == 0 && canvas.getRelatedFile() == null))
+			{
+				if(!showSaveDialog(canvas))
+					return;
+			}
+			else if(retval == 0)
+			{
+				if(!saveNoDialog(canvas))
+					return;
+			}
+			else if(retval == 3)
+			{
+				return;
+			}
+		}
+		if(openCanvases.remove(canvas))
+		{
+			for(Component c : openPanel.getComponents())
+			{
+				if(c instanceof ContainerButton)
+				{
+					ContainerButton btn = (ContainerButton)c;
+					if(btn.getCanvasContainer() == canvas)
+					{
+						openPanel.remove(btn);
+						break;
+					}
+				}
+			}
+			if(openCanvases.size() == 0)
+			{
+				addOpenCanvas(new CanvasContainer(manager, this.colorPanel), true);
+			}
+			else if(currentCanvas == canvas)
+			{
+				this.setSelectedCanvas(openCanvases.get(0));
+			}
+		}
+	}
+		
+	
 	public void addOpenCanvas(final CanvasContainer canvas, boolean switchTo) {
 		this.openCanvases.add(canvas);
-		ContainerButton btn = new ContainerButton(canvas, new Dimension(64, 64));
+		final ContainerButton btn = new ContainerButton(canvas, new Dimension(64, 64));
 		this.openPanel.add(btn);
 		btn.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-				setSelectedCanvas(canvas);
+				if(btn.isOverX())
+					requestClose(canvas);
+				else setSelectedCanvas(canvas);
+				
 			}
 			
 		});
@@ -346,24 +395,10 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 		}
 		else if(e.getSource() == mntmSave)
 		{
-			JFileChooser chooser = new JFileChooser();
-			if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
-			{
-				try{
-				BufferedImage image = currentCanvas.manager.getImage();
-				String file = chooser.getSelectedFile().getCanonicalPath();
-				if(!file.toLowerCase().trim().endsWith(".png"))
-					file += ".png";
-				File newFile = new File(file);
-				ImageIO.write(image, "png", newFile);
-				currentCanvas.setChanged(false);
-				currentCanvas.setRelatedFile(newFile);
-				setName();
-				}catch (IOException e1) {
-					JOptionPane.showMessageDialog(null, "The file could not be saved!", "Error", JOptionPane.ERROR_MESSAGE);
-					e1.printStackTrace();
-				}
-			}
+			if(currentCanvas.getRelatedFile() == null)
+				showSaveDialog(currentCanvas);
+			else 
+				saveNoDialog(currentCanvas);
 		}
 		else if(e.getSource() == mntmS2CB)
 		{
@@ -389,6 +424,42 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 			currentCanvas.revalidate();
 			currentCanvas.repaint();
 		}
+	}
+
+	private boolean showSaveDialog(CanvasContainer cc) {
+		JFileChooser chooser = new JFileChooser();
+		if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+		{
+			try{
+			BufferedImage image = cc.manager.getImage();
+			String file = chooser.getSelectedFile().getCanonicalPath();
+			if(!file.toLowerCase().trim().endsWith(".png"))
+				file += ".png";
+			File newFile = new File(file);
+			ImageIO.write(image, "png", newFile);
+			cc.setChanged(false);
+			cc.setRelatedFile(newFile);
+			setName();
+			return true;
+			}catch (IOException e1) {
+				JOptionPane.showMessageDialog(null, "The file could not be saved!", "Error", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			}
+		}
+		return false;
+	}
+	private boolean saveNoDialog(CanvasContainer cc) {
+		try{
+			BufferedImage image = cc.manager.getImage();
+			ImageIO.write(image, "png", cc.getRelatedFile());
+			cc.setChanged(false);
+			setName();
+			return true;
+		}catch (IOException e1) {
+			JOptionPane.showMessageDialog(null, "The file could not be saved!", "Error", JOptionPane.ERROR_MESSAGE);
+			e1.printStackTrace();
+		}
+		return false;
 	}
 
 	int icoimg = 32;
