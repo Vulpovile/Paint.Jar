@@ -13,16 +13,21 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
+import javax.swing.border.BevelBorder;
+
 import com.androdome.util.paintdotjar.Canvas;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 
 public class CanvasContainer extends JComponent implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener{
 
+	private boolean changed = false;
 	ArrayList<Canvas> layers = new ArrayList<Canvas>();
 	Canvas temporaryCanvas = null;
+	File relatedFile = null;
 	int tempIndex = -1;
 	int width = 800;
 	int height = 600;
@@ -50,6 +55,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	}
 	
 	public CanvasRenderMode canvasRenderMode = CanvasRenderMode.TILEDRAW;
+	public ContainerButton containerButton = null;
 	/**
 	 * 
 	 */
@@ -71,6 +77,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 		colors = color;
 		pluginManager = mi;
 		layers.add(new Canvas(width, height));
+		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 	}
 	
 	public CanvasContainer(int width, int height, PluginManager mi, ColorBar color) {
@@ -80,6 +87,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 		this.width = width;
 		this.height = height;
 		layers.add(new Canvas(width, height));
+		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 	}
 	
 	public CanvasContainer(BufferedImage img, PluginManager mi, ColorBar color) {
@@ -89,6 +97,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 		this.width = img.getWidth();
 		this.height = img.getHeight();
 		layers.add(new Canvas(img));
+		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 	}
 	
 	public void rescaleCanvases()
@@ -108,7 +117,12 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 			}
 		}
 	}
-	
+	public void repaint()
+	{
+		super.repaint();
+		if(containerButton != null)
+		containerButton.repaint();
+	}
 	public void paintComponent(Graphics g)
 	{
 		//super.paintComponent(g);
@@ -269,6 +283,23 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if(pluginManager.getTool() != null)
 			pluginManager.getTool().onMouseWheelMove(e, manager);
+	}
+	public void setRelatedFile(File selectedFile) {
+		this.relatedFile = selectedFile;
+	}
+	public File getRelatedFile() {
+		return this.relatedFile;
+	}
+	public boolean isChanged() {
+		return changed;
+	}
+	public void setChanged(boolean changed) {
+		this.changed = changed;
+		pluginManager.getMainInterface().setName();
+	}
+	public ArrayList<Canvas> getLayers() {
+		// TODO Auto-generated method stub
+		return layers;
 	}
 
 

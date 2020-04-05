@@ -69,6 +69,7 @@ public class CanvasManager {
 				canvas.apply(cc.temporaryCanvas);
 			}
 		}
+		cc.setChanged(true);
 		cc.tempIndex = -1;
 		cc.temporaryCanvas = null;
 	}

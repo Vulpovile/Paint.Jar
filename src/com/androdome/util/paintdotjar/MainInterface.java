@@ -1,6 +1,7 @@
 package com.androdome.util.paintdotjar;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
@@ -30,6 +31,7 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -44,9 +46,14 @@ import com.androdome.util.paintdotjar.plugin.PluginManager;
 import com.androdome.util.paintdotjar.plugin.RegisteredTool;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 import com.androdome.util.paintdotjar.ui.ColorBar;
+import com.androdome.util.paintdotjar.ui.ContainerButton;
+import com.androdome.util.paintdotjar.ui.dialog.CrashDialog;
 import com.androdome.util.paintdotjar.ui.dialog.CreateDialog;
 import com.androdome.util.paintdotjar.ui.dialog.LooksAndFeels;
+
 import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.BoxLayout;
 
 public class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener {
 
@@ -65,7 +72,8 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	JCheckBox chckbxTickMultiples = new JCheckBox("Tick multiples");
 	ColorBar colorPanel = new ColorBar();
 	PluginManager manager = new PluginManager(this);
-	CanvasContainer canvasContainer = new CanvasContainer(manager, colorPanel);
+	CanvasContainer currentCanvas = new CanvasContainer(manager, colorPanel);
+	ArrayList<CanvasContainer> openCanvases = new ArrayList<CanvasContainer>();
 	JPanel toolBox = new JPanel();
 	JSlider sliderScale = new JSlider();
 	JToolBar toolBarPlugin = new JToolBar();
@@ -76,6 +84,8 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		MainInterface frame = null;
+		try{
 		System.setProperty("sun.java2d.opengl", "true");
 		LookAndFeelInfo[] laf = UIManager.getInstalledLookAndFeels();
 		boolean found = false;
@@ -134,25 +144,32 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 				e.printStackTrace();
 			}
 		}
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try
-				{
-					MainInterface frame = new MainInterface();
+		//EventQueue.invokeLater(new Runnable() {
+			//public void run() {
+				//try
+				//{
+					frame = new MainInterface();
 					frame.setVisible(true);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-		});
+				//}
+				//catch (Exception e)
+				//{
+					//e.printStackTrace();
+				//}
+			//}
+		//});
+		}
+		catch(Throwable err)
+		{
+			err.printStackTrace();
+			new CrashDialog(err, frame).setVisible(true);
+		}
 	}
 
 	/**
 	 * Create the frame.
 	 */
 	public MainInterface() {
+		//addOpenCanvas(currentCanvas, true);
 		setTitle("Paint.jar");
 		manager.loadPlugins();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -161,24 +178,19 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 		contentPane.setBorder(null);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		
+		addOpenCanvas(currentCanvas, true);
 		JPanel panel = new JPanel();
 		panel.setBorder(null);
 		contentPane.add(panel, BorderLayout.NORTH);
 		panel.setLayout(new BorderLayout(0, 0));
 		
-		JPanel openPanel = new JPanel();
-		openPanel.setBackground(new Color(153, 153, 153));
-		openPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		panel.add(openPanel);
-		
 		JPanel toolPanel = new JPanel();
 		toolPanel.setBorder(null);
 		panel.add(toolPanel, BorderLayout.WEST);
-		toolPanel.setLayout(new BorderLayout(0, 0));
+		toolPanel.setLayout(new BoxLayout(toolPanel, BoxLayout.Y_AXIS));
 		
 		JMenuBar menuBar = new JMenuBar();
-		toolPanel.add(menuBar, BorderLayout.NORTH);
+		toolPanel.add(menuBar);
 		
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
@@ -215,20 +227,30 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 		menuBar.add(mnPlugins);
 		
 		JToolBar toolBarGeneral = new JToolBar();
-		toolPanel.add(toolBarGeneral, BorderLayout.CENTER);
+		toolPanel.add(toolBarGeneral);
 		
-		toolPanel.add(toolBarPlugin, BorderLayout.SOUTH);
+		toolPanel.add(toolBarPlugin);
 
 
 		panel.add(toolBarTool, BorderLayout.SOUTH);
+		
+		panel.add(scrollPane, BorderLayout.CENTER);
+		FlowLayout flowLayout = (FlowLayout) openPanel.getLayout();
+		flowLayout.setHgap(0);
+		flowLayout.setVgap(0);
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		openPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		openPanel.setBackground(new Color(153, 153, 153));
+		scrollPane.setPreferredSize(new Dimension(-1, 74));
+		scrollPane.setViewportView(openPanel);
 		
 
 		contentPane.add(toolBox, BorderLayout.WEST);
 		toolBox.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		toolBox.setPreferredSize(new Dimension((icoimg+4+5)*2+5,0));
-		canvasContainer.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		
-		contentPane.add(canvasContainer, BorderLayout.CENTER);
+		
+		contentPane.add(currentCanvas, BorderLayout.CENTER);
 		
 		JPanel panel_1 = new JPanel();
 		contentPane.add(panel_1, BorderLayout.SOUTH);
@@ -278,6 +300,21 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 
 	}
 
+	public void addOpenCanvas(final CanvasContainer canvas, boolean switchTo) {
+		this.openCanvases.add(canvas);
+		ContainerButton btn = new ContainerButton(canvas, new Dimension(64, 64));
+		this.openPanel.add(btn);
+		btn.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent e) {
+				setSelectedCanvas(canvas);
+			}
+			
+		});
+		if(switchTo)
+			setSelectedCanvas(canvas);
+	}
+
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == mntmOpen)
 		{
@@ -291,10 +328,10 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 						JOptionPane.showMessageDialog(null, "The file has no valid reader associated to it!", "Error", JOptionPane.ERROR_MESSAGE);
 						return;
 					}
-					contentPane.remove(canvasContainer);
-					canvasContainer = new CanvasContainer(img, manager, colorPanel);
-					contentPane.add(canvasContainer);
-					contentPane.revalidate();
+					//contentPane.remove(currentCanvas);
+					CanvasContainer cont = new CanvasContainer(img, manager, colorPanel);
+					cont.setRelatedFile(chooser.getSelectedFile());
+					addOpenCanvas(cont, true);
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, "The file is invalid!", "Error", JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
@@ -313,11 +350,15 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 			if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
 			{
 				try{
-				BufferedImage image = canvasContainer.manager.getImage();
+				BufferedImage image = currentCanvas.manager.getImage();
 				String file = chooser.getSelectedFile().getCanonicalPath();
 				if(!file.toLowerCase().trim().endsWith(".png"))
 					file += ".png";
-				ImageIO.write(image, "png", new File(file));
+				File newFile = new File(file);
+				ImageIO.write(image, "png", newFile);
+				currentCanvas.setChanged(false);
+				currentCanvas.setRelatedFile(newFile);
+				setName();
 				}catch (IOException e1) {
 					JOptionPane.showMessageDialog(null, "The file could not be saved!", "Error", JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
@@ -326,7 +367,7 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 		}
 		else if(e.getSource() == mntmS2CB)
 		{
-			BufferedImage image = canvasContainer.manager.getImage();
+			BufferedImage image = currentCanvas.manager.getImage();
 			ClipboardImage.write(image);
 		}
 		else if(e.getSource() == mntmLAF)
@@ -338,15 +379,15 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 		}
 		else if(e.getSource() == mntmStandard)
 		{
-			canvasContainer.canvasRenderMode = CanvasContainer.CanvasRenderMode.NORMAL;
-			canvasContainer.revalidate();
-			canvasContainer.repaint();
+			currentCanvas.canvasRenderMode = CanvasContainer.CanvasRenderMode.NORMAL;
+			currentCanvas.revalidate();
+			currentCanvas.repaint();
 		}
 		else if(e.getSource() == mntmTiledraw)
 		{
-			canvasContainer.canvasRenderMode = CanvasContainer.CanvasRenderMode.TILEDRAW;
-			canvasContainer.revalidate();
-			canvasContainer.repaint();
+			currentCanvas.canvasRenderMode = CanvasContainer.CanvasRenderMode.TILEDRAW;
+			currentCanvas.revalidate();
+			currentCanvas.repaint();
 		}
 	}
 
@@ -354,6 +395,8 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	private JTextField txtScale;
 	private final JPanel rightSidePanel = new JPanel();
 	private final JButton btnHidePanel = new JButton("");
+	private final JScrollPane scrollPane = new JScrollPane();
+	private final JPanel openPanel = new JPanel();
 	public void retool() {
 		toolBox.removeAll();
 		clearToolToolbar();
@@ -385,14 +428,14 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	}
 
 	public CanvasContainer getCanvasContainer() {
-		return this.canvasContainer;
+		return this.currentCanvas;
 	}
 
 	public void stateChanged(ChangeEvent arg0) {
 		if(arg0.getSource() == sliderScale)
 		{
-			canvasContainer.setScale(sliderScale.getValue()/100.0F);
-			canvasContainer.repaint();
+			currentCanvas.setScale(sliderScale.getValue()/100.0F);
+			currentCanvas.repaint();
 		}
 		else if(arg0.getSource() == chckbxTickMultiples)
 		{
@@ -432,11 +475,11 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 							throw new Exception();//Will change this!
 						sliderScale.setValue((int) perc);
 						txtScale.setText(perc + "%");
-						canvasContainer.setScale(perc/100);
+						currentCanvas.setScale(perc/100);
 					}
 					catch(Exception ex)
 					{
-						txtScale.setText(canvasContainer.getScale()*100+"%");
+						txtScale.setText(currentCanvas.getScale()*100+"%");
 					}
 				}
 				else
@@ -447,14 +490,14 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 							throw new Exception();//Will change this!
 						sliderScale.setValue((int) perc);
 						txtScale.setText(perc + "%");
-						canvasContainer.setScale(perc/100);
+						currentCanvas.setScale(perc/100);
 					}
 					catch(Exception ex)
 					{
-						txtScale.setText(canvasContainer.getScale()*100+"%");
+						txtScale.setText(currentCanvas.getScale()*100+"%");
 					}
 				}
-				canvasContainer.repaint();
+				currentCanvas.repaint();
 			}
 		}
 	}
@@ -462,16 +505,16 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	public void keyReleased(KeyEvent e) {
 		
 	}
-	public void setCanvasContainer(CanvasContainer newCanvas)
+	/*public void setCanvasContainer(CanvasContainer newCanvas)
 	{
-		contentPane.remove(canvasContainer);
+		contentPane.remove(currentCanvas);
 		if(newCanvas != null)
-			this.canvasContainer = newCanvas;
+			this.currentCanvas = newCanvas;
 		else
-			canvasContainer = new CanvasContainer(manager, colorPanel);
-		contentPane.add(canvasContainer);
+			currentCanvas = new CanvasContainer(manager, colorPanel);
+		contentPane.add(currentCanvas);
 		contentPane.revalidate();
-	}
+	}*/
 	public JToolBar getToolToolbar()
 	{
 		return toolBarTool;
@@ -491,5 +534,41 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 		toolBarPlugin.removeAll();
 		toolBarPlugin.revalidate();
 		toolBarTool.repaint();
+	}
+	public void setSelectedCanvas(CanvasContainer cc)
+	{
+		if(openCanvases.contains(cc))
+		{
+			contentPane.remove(currentCanvas);
+			for(Component c : openPanel.getComponents())
+			{
+				if(c instanceof ContainerButton)
+				{
+					ContainerButton contButton = (ContainerButton)c;
+					if(contButton.getCanvasContainer() == cc)
+						contButton.setSelected(true);
+					else contButton.setSelected(false);
+				}
+			}
+			currentCanvas = cc;
+			contentPane.add(currentCanvas);
+			contentPane.revalidate();
+			contentPane.repaint();
+			setName();
+		}
+	}
+
+	public void setName() {
+		String name = "Paint.jar - ";
+		if(currentCanvas.getRelatedFile() == null)
+			name += "Untitled";
+		else name += currentCanvas.getRelatedFile().getName();
+		if(currentCanvas.isChanged())
+			name += "*";
+		this.setTitle(name);
+	}
+
+	public ArrayList<CanvasContainer> getOpenCanvases() {
+		return this.openCanvases;
 	}
 }

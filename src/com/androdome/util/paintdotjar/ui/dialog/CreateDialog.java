@@ -109,7 +109,7 @@ public class CreateDialog extends JDialog {
 							else g.setColor(new Color(0,0,0,0));
 							g.fillRect(0, 0, cc.manager.getImage().getWidth(), cc.manager.getImage().getHeight());
 						}
-						mainInterface.setCanvasContainer(cc);
+						mainInterface.addOpenCanvas(cc, true);
 						dispose();
 					}
 					else
