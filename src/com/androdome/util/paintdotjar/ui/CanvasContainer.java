@@ -28,6 +28,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	ArrayList<Canvas> layers = new ArrayList<Canvas>();
 	Canvas temporaryCanvas = null;
 	File relatedFile = null;
+	String formatname = null;
 	int tempIndex = -1;
 	int width = 800;
 	int height = 600;
@@ -300,6 +301,14 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	public ArrayList<Canvas> getLayers() {
 		// TODO Auto-generated method stub
 		return layers;
+	}
+	public void setFormatName(String formatName)
+	{
+		formatname = formatName;
+	}
+	public String getFormatName()
+	{
+		return formatname;
 	}
 
 

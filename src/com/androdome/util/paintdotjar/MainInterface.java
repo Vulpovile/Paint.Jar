@@ -22,6 +22,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -30,6 +31,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -50,6 +52,7 @@ import com.androdome.util.paintdotjar.ui.ContainerButton;
 import com.androdome.util.paintdotjar.ui.dialog.CrashDialog;
 import com.androdome.util.paintdotjar.ui.dialog.CreateDialog;
 import com.androdome.util.paintdotjar.ui.dialog.LooksAndFeels;
+import com.androdome.util.paintdotjar.util.PaintUtils;
 
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
@@ -202,6 +205,8 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 
 		mnFile.add(mntmSave);
 		
+		mnFile.add(mntmSaveAs);
+		
 		JMenu mnView = new JMenu("View");
 		menuBar.add(mnView);
 		
@@ -292,6 +297,7 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 		mntmOpen.addActionListener(this);
 		mntmNew.addActionListener(this);
 		mntmSave.addActionListener(this);
+		mntmSaveAs.addActionListener(this);
 		mntmS2CB.addActionListener(this);
 		mntmLAF.addActionListener(this);
 		txtScale.addKeyListener(this);
@@ -367,23 +373,96 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == mntmOpen)
 		{
+			final String names[] = ImageIO.getReaderFormatNames();
 			JFileChooser chooser = new JFileChooser();
+			chooser.setFileFilter(new FileFilter()
+            {
+				@Override
+				public boolean accept(File f) {
+					// TODO Auto-generated method stub
+					for(String name : names)
+					{
+						if(f.isDirectory())
+							return true;
+						if(f.getName().toLowerCase().endsWith(name.toLowerCase()))
+							return true;
+					}
+					return false;
+				}
+
+				@Override
+				public String getDescription() {
+						return "All Known Image Formats | *.?";
+				}
+               
+            });
+			
+			ArrayList<String> takenNames = new ArrayList<String>();
+			for(int i = 0; i < names.length; i++)
+			{
+				final String name = names[i].toLowerCase();
+				if(takenNames.contains(names[i].toLowerCase()))
+					continue;
+				takenNames.add(name);
+				chooser.addChoosableFileFilter(new FileFilter()
+	                {
+						@Override
+						public boolean accept(File f) {
+							// TODO Auto-generated method stub
+							if(f.isDirectory())
+								return true;
+							return f.getName().toLowerCase().endsWith("."+name);
+						}
+
+						@Override
+						public String getDescription() {
+							String ret = PaintUtils.registeredDesc.get(name);
+							if(ret == null)
+								return "Unknown Format | *."+name;
+							return ret + " | *."+name;
+						}
+	                   
+	                });
+			}
+			chooser.setMultiSelectionEnabled(true);
 			if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
 			{
-				try {
-					BufferedImage img = ImageIO.read(chooser.getSelectedFile());
-					if(img == null)
-					{
-						JOptionPane.showMessageDialog(null, "The file has no valid reader associated to it!", "Error", JOptionPane.ERROR_MESSAGE);
-						return;
+				for(File f : chooser.getSelectedFiles())
+				{
+					boolean canRecover = false;
+					CanvasContainer cont = null;
+					BufferedImage img = null;
+					try {
+						img = ImageIO.read(f);
+						if(img == null)
+						{
+							JOptionPane.showMessageDialog(null, "The file has no valid reader associated to it!", "Error", JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+						//contentPane.remove(currentCanvas);
+						cont = new CanvasContainer(img, manager, colorPanel);
+						cont.setRelatedFile(chooser.getSelectedFile());
+						canRecover = false;
+						addOpenCanvas(cont, true);
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(null, "The file is invalid!", "Error", JOptionPane.ERROR_MESSAGE);
+						e1.printStackTrace();
 					}
-					//contentPane.remove(currentCanvas);
-					CanvasContainer cont = new CanvasContainer(img, manager, colorPanel);
-					cont.setRelatedFile(chooser.getSelectedFile());
-					addOpenCanvas(cont, true);
-				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(null, "The file is invalid!", "Error", JOptionPane.ERROR_MESSAGE);
-					e1.printStackTrace();
+					catch (OutOfMemoryError e1) {
+						img = null;
+						cont = null;
+						System.gc();
+						if(!canRecover)
+						{
+							this.dispose();
+							this.currentCanvas = null;
+							System.gc();
+							new CrashDialog(e1, this).setVisible(true);
+						}
+						JOptionPane.showMessageDialog(null, "Out of memory! Cannot load any more files!", "Error", JOptionPane.ERROR_MESSAGE);
+						e1.printStackTrace();
+						break;
+					}
 				}
 			}
 		}
@@ -399,6 +478,10 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 				showSaveDialog(currentCanvas);
 			else 
 				saveNoDialog(currentCanvas);
+		}
+		else if(e.getSource() == mntmSaveAs)
+		{
+			showSaveDialog(currentCanvas);
 		}
 		else if(e.getSource() == mntmS2CB)
 		{
@@ -427,16 +510,99 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	}
 
 	private boolean showSaveDialog(CanvasContainer cc) {
+		final String names[] = ImageIO.getWriterFormatNames();
 		JFileChooser chooser = new JFileChooser();
+		ArrayList<String> takenNames = new ArrayList<String>();
+		for(int i = 0; i < names.length; i++)
+		{
+			final String name = names[i].toLowerCase();
+			if(takenNames.contains(names[i].toLowerCase()))
+				continue;
+			takenNames.add(name);
+			if(cc.getFormatName() == null && name == "png")
+			{
+				chooser.setFileFilter(new FileExtFilter(name)
+                {
+					@Override
+					public boolean accept(File f) {
+						// TODO Auto-generated method stub
+						if(f.isDirectory())
+							return true;
+						return f.getName().toLowerCase().endsWith("."+name);
+					}
+
+					@Override
+					public String getDescription() {
+						String ret = PaintUtils.registeredDesc.get(name);
+						if(ret == null)
+							return "Unknown Format | *."+name;
+						return ret + " | *."+name;
+					}
+                   
+                });
+			}
+			else if(cc.getFormatName() == name)
+			{
+				chooser.setFileFilter(new FileExtFilter(name)
+                {
+					@Override
+					public boolean accept(File f) {
+						// TODO Auto-generated method stub
+						if(f.isDirectory())
+							return true;
+						return f.getName().toLowerCase().endsWith("."+name);
+					}
+
+					@Override
+					public String getDescription() {
+						String ret = PaintUtils.registeredDesc.get(name);
+						if(ret == null)
+							return "Unknown Format | *."+name;
+						return ret + " | *."+name;
+					}
+                   
+                });
+			}
+			else
+			{
+				chooser.addChoosableFileFilter(new FileExtFilter(name)
+                {
+					@Override
+					public boolean accept(File f) {
+						// TODO Auto-generated method stub
+						if(f.isDirectory())
+							return true;
+						return f.getName().toLowerCase().endsWith("."+name);
+					}
+
+					@Override
+					public String getDescription() {
+						String ret = PaintUtils.registeredDesc.get(name);
+						if(ret == null)
+							return "Unknown Format | *."+name;
+						return ret + " | *."+name;
+					}
+                   
+                });
+			}
+		}
+		chooser.setSelectedFile(cc.getRelatedFile());
 		if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
 		{
 			try{
+			String ext = "png";
+			boolean setExt = false;
+			if(chooser.getFileFilter() instanceof FileExtFilter)
+			{
+				setExt = true;
+				ext = ((FileExtFilter)chooser.getFileFilter()).getExt();
+			}
 			BufferedImage image = cc.manager.getImage();
 			String file = chooser.getSelectedFile().getCanonicalPath();
-			if(!file.toLowerCase().trim().endsWith(".png"))
-				file += ".png";
+			if(!chooser.getSelectedFile().getName().contains(".") || (setExt && !file.toLowerCase().trim().endsWith("."+ext)))
+				file += "."+ext;
 			File newFile = new File(file);
-			ImageIO.write(image, "png", newFile);
+			ImageIO.write(image, ext, newFile);
 			cc.setChanged(false);
 			cc.setRelatedFile(newFile);
 			setName();
@@ -468,6 +634,7 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	private final JButton btnHidePanel = new JButton("");
 	private final JScrollPane scrollPane = new JScrollPane();
 	private final JPanel openPanel = new JPanel();
+	private final JMenuItem mntmSaveAs = new JMenuItem("Save As...");
 	public void retool() {
 		toolBox.removeAll();
 		clearToolToolbar();
@@ -642,4 +809,24 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	public ArrayList<CanvasContainer> getOpenCanvases() {
 		return this.openCanvases;
 	}
+}
+
+abstract class FileExtFilter extends FileFilter
+{
+	FileExtFilter(String ext)
+	{
+		this.ext = ext;
+	}
+	private String ext;
+	@Override
+	public abstract boolean accept(File f);
+
+	@Override
+	public abstract String getDescription();
+	
+	public String getExt()
+	{
+		return ext;
+	}
+	
 }
