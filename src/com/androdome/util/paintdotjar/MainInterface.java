@@ -3,7 +3,6 @@ package com.androdome.util.paintdotjar;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Image;
 
 import javax.imageio.ImageIO;
@@ -31,7 +30,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -49,6 +47,7 @@ import com.androdome.util.paintdotjar.plugin.RegisteredTool;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 import com.androdome.util.paintdotjar.ui.ColorBar;
 import com.androdome.util.paintdotjar.ui.ContainerButton;
+import com.androdome.util.paintdotjar.ui.dialog.AboutDialog;
 import com.androdome.util.paintdotjar.ui.dialog.CrashDialog;
 import com.androdome.util.paintdotjar.ui.dialog.CreateDialog;
 import com.androdome.util.paintdotjar.ui.dialog.LooksAndFeels;
@@ -64,23 +63,27 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final String BUILD = "Alpha 0.0.8";
 	private JPanel contentPane;
-	JMenuItem mntmOpen = new JMenuItem("Open");
-	JMenuItem mntmNew = new JMenuItem("New");
-	JMenuItem mntmSave = new JMenuItem("Save");
-	JMenuItem mntmS2CB = new JMenuItem("Save to clipboard");
-	JMenuItem mntmLAF = new JMenuItem("Looks And Feels");
-	JMenuItem mntmStandard = new JMenuItem("Standard");
-	JMenuItem mntmTiledraw = new JMenuItem("TileDraw");
-	JCheckBox chckbxTickMultiples = new JCheckBox("Tick multiples");
-	ColorBar colorPanel = new ColorBar();
-	PluginManager manager = new PluginManager(this);
-	CanvasContainer currentCanvas = new CanvasContainer(manager, colorPanel);
-	ArrayList<CanvasContainer> openCanvases = new ArrayList<CanvasContainer>();
-	JPanel toolBox = new JPanel();
-	JSlider sliderScale = new JSlider();
-	JToolBar toolBarPlugin = new JToolBar();
-	JToolBar toolBarTool = new JToolBar();
+	private JMenuItem mntmOpen = new JMenuItem("Open");
+	private JMenuItem mntmNew = new JMenuItem("New");
+	private JMenuItem mntmSave = new JMenuItem("Save");
+	private JMenuItem mntmS2CB = new JMenuItem("Save to clipboard");
+	private JMenuItem mntmLAF = new JMenuItem("Looks And Feels");
+	private JMenuItem mntmStandard = new JMenuItem("Standard");
+	private JMenuItem mntmTiledraw = new JMenuItem("TileDraw");
+	private JMenuItem mntmAbout = new JMenuItem("About");
+	private JCheckBox chckbxTickMultiples = new JCheckBox("Tick multiples");
+	private ColorBar colorPanel = new ColorBar();
+	private PluginManager manager = new PluginManager(this);
+	private CanvasContainer currentCanvas = new CanvasContainer(manager, colorPanel);
+	private ArrayList<CanvasContainer> openCanvases = new ArrayList<CanvasContainer>();
+	private JPanel toolBox = new JPanel();
+	private JSlider sliderScale = new JSlider();
+	private JToolBar toolBarPlugin = new JToolBar();
+	private JToolBar toolBarTool = new JToolBar();
+	@SuppressWarnings("unused") //Will be used once I transfer loading and saving to FileFormatManagers
+	private MainInterfaceAbstractor abs = new MainInterfaceAbstractor(this);
 	int maxOn = 3200;
 	int maxOff = 800;
 	/**
@@ -171,7 +174,7 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	/**
 	 * Create the frame.
 	 */
-	public MainInterface() {
+	private MainInterface() {
 		//addOpenCanvas(currentCanvas, true);
 		setTitle("Paint.jar");
 		manager.loadPlugins();
@@ -206,6 +209,8 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 		mnFile.add(mntmSave);
 		
 		mnFile.add(mntmSaveAs);
+		
+		mnFile.add(mntmAbout);
 		
 		JMenu mnView = new JMenu("View");
 		menuBar.add(mnView);
@@ -303,10 +308,11 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 		txtScale.addKeyListener(this);
 		mntmStandard.addActionListener(this);
 		mntmTiledraw.addActionListener(this);
+		mntmAbout.addActionListener(this);
 
 	}
 
-	private void requestClose(CanvasContainer canvas) {
+	public void requestClose(CanvasContainer canvas) {
 		if(canvas.isChanged())
 		{
 			int retval = JOptionPane.showOptionDialog(null, "This canvas has unsaved changes!\r\nSave them before closing?", "Save", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Save", "Save As", "Discard", "Cancel"}, null);
@@ -336,6 +342,8 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 					if(btn.getCanvasContainer() == canvas)
 					{
 						openPanel.remove(btn);
+						contentPane.revalidate();
+						contentPane.repaint();
 						break;
 					}
 				}
@@ -379,7 +387,6 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
             {
 				@Override
 				public boolean accept(File f) {
-					// TODO Auto-generated method stub
 					for(String name : names)
 					{
 						if(f.isDirectory())
@@ -408,7 +415,6 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	                {
 						@Override
 						public boolean accept(File f) {
-							// TODO Auto-generated method stub
 							if(f.isDirectory())
 								return true;
 							return f.getName().toLowerCase().endsWith("."+name);
@@ -507,6 +513,10 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 			currentCanvas.revalidate();
 			currentCanvas.repaint();
 		}
+		else if(e.getSource() == mntmAbout)
+		{
+			new AboutDialog(manager).setVisible(true);
+		}
 	}
 
 	private boolean showSaveDialog(CanvasContainer cc) {
@@ -525,7 +535,6 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
                 {
 					@Override
 					public boolean accept(File f) {
-						// TODO Auto-generated method stub
 						if(f.isDirectory())
 							return true;
 						return f.getName().toLowerCase().endsWith("."+name);
@@ -547,7 +556,6 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
                 {
 					@Override
 					public boolean accept(File f) {
-						// TODO Auto-generated method stub
 						if(f.isDirectory())
 							return true;
 						return f.getName().toLowerCase().endsWith("."+name);
@@ -569,7 +577,6 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
                 {
 					@Override
 					public boolean accept(File f) {
-						// TODO Auto-generated method stub
 						if(f.isDirectory())
 							return true;
 						return f.getName().toLowerCase().endsWith("."+name);
@@ -808,6 +815,13 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 
 	public ArrayList<CanvasContainer> getOpenCanvases() {
 		return this.openCanvases;
+	}
+
+	PluginManager getPluginManager() {
+		return manager;
+	}
+	ColorBar getColorBar() {
+		return this.colorPanel;
 	}
 }
 

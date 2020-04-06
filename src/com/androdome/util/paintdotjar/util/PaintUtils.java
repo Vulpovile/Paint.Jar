@@ -3,6 +3,7 @@ package com.androdome.util.paintdotjar.util;
 import java.util.HashMap;
 
 public class PaintUtils {
+	public static HashMap<String, FileFormatManager> registeredHandlers = new HashMap<String, FileFormatManager>();
 	public static HashMap<String, String> registeredDesc = new HashMap<String, String>();
 	static
 	{
