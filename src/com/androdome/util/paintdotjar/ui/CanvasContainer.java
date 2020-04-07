@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -180,37 +181,6 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 		}
 		else 
 		{
-			/*int pscale = 10;
-			for(int i = x; i <= (int)(width*scale); i+=pscale)
-			{
-				for(int j = y; j <= (int) (height*scale); j+=pscale)
-				{
-					if((i+j)%(pscale*2) == 0)
-						g.setColor(new Color(240,240,240));
-					else g.setColor(Color.WHITE);
-					g.fillRect(i, j, pscale, pscale);
-				}
-			}*/
-			/*//Broken!
-			int pscale = (int) (width*scale/100);
-			boolean offset = false;
-			boolean inset = false;
-			for(int i = x; i < (int)Math.ceil(width*scale)+x; i+=pscale)
-			{
-				offset = !offset;
-				inset = !inset;
-				for(int j = y; j < (int)Math.ceil(height*scale)+y; j+=pscale)
-				{
-					inset = !inset;
-					if(inset ^ offset)
-						g.setColor(new Color(240,240,240));
-					else g.setColor(Color.WHITE);
-					int xpscale = pscale;
-					int ypscale = pscale;
-					g.fillRect(i, j, xpscale, ypscale); //wtf is going on
-				}
-			}
-			*/
 			g.setColor(Color.BLACK);
 			for(int i = 0; i < layers.size(); i++)
 			{
@@ -228,7 +198,10 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 			g2d.drawImage(renderableImage, x, y, (int)(width*scale), (int)(height*scale), this);
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		g2d.drawRect(x-1, y-1, (int)(width*scale)+1, (int)(height*scale)+1);
-		
+		if(this.pluginManager.getTool() != null)
+		{
+			this.pluginManager.getTool().onCanvasPaint(g2d, new Rectangle(x, y, (int)(width*scale), (int)(height*scale)), this.manager);
+		}
 	}
 	
 	private int getLowestAfter0(int a, int gap)

@@ -1,5 +1,7 @@
 package com.androdome.util.paintdotjar.plugin.tool;
 
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -29,7 +31,7 @@ public abstract class Tool extends PropertyFilled{
 		return plugin.getMainInterface().getToolToolbar();
 	}
 	public abstract void onSelect();
-	public abstract void onDeSelect();
+	public abstract void onDeselect();
 
 	public abstract void onMouseMove(MouseEvent e, CanvasManager manager);
 	public abstract void onMouseDrag(MouseEvent e, CanvasManager manager);
@@ -42,5 +44,6 @@ public abstract class Tool extends PropertyFilled{
 	public abstract void onKeyPress(KeyEvent e, CanvasManager manager);
 	public abstract void onKeyRelease(KeyEvent e, CanvasManager manager);
 	public abstract void onMouseWheelMove(MouseWheelEvent e, CanvasManager manager);
+	public abstract void onCanvasPaint(Graphics2D g2d, Rectangle innerFrame, CanvasManager manager);
 	
 }

@@ -343,7 +343,7 @@ public final class PluginManager {
 	 */
 	public void setTool(Tool t) {
 		if(this.selectedTool != null)
-			this.selectedTool.onDeSelect();
+			this.selectedTool.onDeselect();
 		this.selectedTool  = t;
 		if(t != null)
 			t.onSelect();

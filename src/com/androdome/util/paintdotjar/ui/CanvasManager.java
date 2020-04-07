@@ -168,6 +168,10 @@ public class CanvasManager {
 		cc.colors.setPrimary(c);
 		cc.colors.recolorDialog();
 	}
+	public float getScale()
+	{
+		return cc.getScale();
+	}
 
 
 	
