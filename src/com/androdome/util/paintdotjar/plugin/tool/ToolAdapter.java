@@ -15,9 +15,9 @@ public abstract class ToolAdapter extends Tool{
 		super(plugin);
 	}
 	@Override
-	public void onSelect(){}
+	public void onSelect(CanvasManager manager){}
 	@Override
-	public void onDeselect(){}
+	public void onDeselect(CanvasManager manager){}
 	@Override
 	public void onMouseMove(MouseEvent e, CanvasManager comp){}
 	@Override

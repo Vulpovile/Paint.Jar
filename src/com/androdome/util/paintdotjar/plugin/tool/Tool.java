@@ -30,8 +30,8 @@ public abstract class Tool extends PropertyFilled{
 	public final JToolBar getToolbar() {
 		return plugin.getMainInterface().getToolToolbar();
 	}
-	public abstract void onSelect();
-	public abstract void onDeselect();
+	public abstract void onSelect(CanvasManager manager);
+	public abstract void onDeselect(CanvasManager manager);
 
 	public abstract void onMouseMove(MouseEvent e, CanvasManager manager);
 	public abstract void onMouseDrag(MouseEvent e, CanvasManager manager);

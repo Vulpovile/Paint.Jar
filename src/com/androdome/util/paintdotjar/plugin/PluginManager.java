@@ -343,10 +343,10 @@ public final class PluginManager {
 	 */
 	public void setTool(Tool t) {
 		if(this.selectedTool != null)
-			this.selectedTool.onDeselect();
+			this.selectedTool.onDeselect(this.getMainInterface().getCanvasContainer().manager);
 		this.selectedTool  = t;
 		if(t != null)
-			t.onSelect();
+			t.onSelect(this.getMainInterface().getCanvasContainer().manager);
 	}
 	
 	/**
