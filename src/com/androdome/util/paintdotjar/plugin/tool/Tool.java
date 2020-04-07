@@ -8,6 +8,7 @@ import java.awt.event.MouseWheelEvent;
 
 import javax.swing.JToolBar;
 
+import com.androdome.util.paintdotjar.devel.annotation.Preliminary;
 import com.androdome.util.paintdotjar.plugin.JavaPlugin;
 import com.androdome.util.paintdotjar.properties.PropertyFilled;
 import com.androdome.util.paintdotjar.ui.CanvasManager;
@@ -44,6 +45,7 @@ public abstract class Tool extends PropertyFilled{
 	public abstract void onKeyPress(KeyEvent e, CanvasManager manager);
 	public abstract void onKeyRelease(KeyEvent e, CanvasManager manager);
 	public abstract void onMouseWheelMove(MouseWheelEvent e, CanvasManager manager);
+	@Preliminary
 	public abstract void onCanvasPaint(Graphics2D g2d, Rectangle innerFrame, CanvasManager manager);
 	
 }
