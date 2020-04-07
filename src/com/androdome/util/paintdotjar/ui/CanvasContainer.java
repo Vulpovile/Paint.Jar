@@ -25,13 +25,23 @@ import com.androdome.util.paintdotjar.plugin.PluginManager;
 public class CanvasContainer extends JComponent implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener{
 
 	private boolean changed = false;
-	ArrayList<Canvas> layers = new ArrayList<Canvas>();
+	private ArrayList<Canvas> layers = new ArrayList<Canvas>();
 	Canvas temporaryCanvas = null;
-	File relatedFile = null;
-	String formatname = null;
+	private File relatedFile = null;
+	private String formatname = null;
 	int tempIndex = -1;
 	int width = 800;
 	int height = 600;
+	
+	public int getImageWidth()
+	{
+		return width;
+	}
+	public int getImageHeight()
+	{
+		return height;
+	}
+	
 	int xoffset = 0;
 	int yoffset = 0;
 	int selectedIndex = 0;
@@ -157,12 +167,12 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 				{
 					for(int ya = getLowestAfter0(y, (int) (height*scale)); ya <= this.getHeight(); ya+=height*scale)
 					{
-						g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, canvas.canvasOpacity / 255F));
-						g2d.drawImage(canvas.canvasImage, xa, ya,(int)(width*scale),(int) (height*scale), this);
+						g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, canvas.getOpacity() / 255F));
+						g2d.drawImage(canvas.getImage(), xa, ya,(int)(width*scale),(int) (height*scale), this);
 						if(tempIndex == i && temporaryCanvas != null)
 						{
-							g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, temporaryCanvas.canvasOpacity / 255F));
-							g2d.drawImage(temporaryCanvas.canvasImage, xa, ya,(int)(width*scale),(int) (height*scale), this);
+							g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, temporaryCanvas.getOpacity() / 255F));
+							g2d.drawImage(temporaryCanvas.getImage(), xa, ya,(int)(width*scale),(int) (height*scale), this);
 						}
 					}
 				}
@@ -205,12 +215,12 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 			for(int i = 0; i < layers.size(); i++)
 			{
 				Canvas canvas = layers.get(i);
-				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, canvas.canvasOpacity / 255F));
-				g2d.drawImage(canvas.canvasImage, x, y,(int)(width*scale),(int) (height*scale), this);
+				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, canvas.getOpacity() / 255F));
+				g2d.drawImage(canvas.getImage(), x, y,(int)(width*scale),(int) (height*scale), this);
 				if(tempIndex == i && temporaryCanvas != null)
 				{
-					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, temporaryCanvas.canvasOpacity / 255F));
-					g2d.drawImage(temporaryCanvas.canvasImage, x, y,(int)(width*scale),(int) (height*scale), this);
+					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, temporaryCanvas.getOpacity() / 255F));
+					g2d.drawImage(temporaryCanvas.getImage(), x, y,(int)(width*scale),(int) (height*scale), this);
 				}
 			}
 		}

@@ -18,12 +18,12 @@ public class ContainerButton extends JToggleButton implements MouseMotionListene
 	/**
 	 * 
 	 */
-	int crossSize = 10;
-	int crossOffset = 5;
-	boolean isOverArea = false;
+	private int crossSize = 10;
+	private int crossOffset = 5;
+	private boolean isOverArea = false;
 	private static final long serialVersionUID = 1L;
-	CanvasContainer canvas;
-	static Image crossImage = null;
+	private CanvasContainer canvas;
+	private static Image crossImage = null;
 	public CanvasContainer getCanvasContainer()
 	{
 		return canvas;
@@ -57,9 +57,9 @@ public class ContainerButton extends JToggleButton implements MouseMotionListene
 	{
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D)g;
-		for(Canvas c : canvas.layers)
+		for(Canvas c : canvas.getLayers())
 		{
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, c.canvasOpacity / 255F));
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, c.getOpacity() / 255F));
 			g2d.drawImage(c.getImage(), 6, 6, getWidth()-12, getHeight()-12, this);
 		}
 		if(crossImage != null)

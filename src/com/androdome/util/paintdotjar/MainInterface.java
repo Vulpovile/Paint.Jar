@@ -21,8 +21,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileFilter;
-
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -61,6 +59,7 @@ import com.androdome.util.paintdotjar.util.PaintUtils;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.BoxLayout;
+import javax.swing.ScrollPaneConstants;
 
 public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener {
 
@@ -88,8 +87,15 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	private JToolBar toolBarPlugin = new JToolBar();
 	private JToolBar toolBarTool = new JToolBar();
 	private MainInterfaceAbstractor abstractor = new MainInterfaceAbstractor(this);
-	int maxOn = 3200;
-	int maxOff = 800;
+	private final static int icoimg = 32;
+	private JTextField txtScale;
+	private final JPanel rightSidePanel = new JPanel();
+	private final JButton btnHidePanel = new JButton("");
+	private final JScrollPane scrollPane = new JScrollPane();
+	private final JPanel openPanel = new JPanel();
+	private final JMenuItem mntmSaveAs = new JMenuItem("Save As...");
+	private final static int maxOn = 3200;
+	private final static int maxOff = 800;
 	/**
 	 * Launch the application.
 	 */
@@ -271,6 +277,8 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 
 
 		panel.add(toolBarTool, BorderLayout.SOUTH);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		
 		panel.add(scrollPane, BorderLayout.CENTER);
 		FlowLayout flowLayout = (FlowLayout) openPanel.getLayout();
@@ -279,7 +287,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		openPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		openPanel.setBackground(new Color(153, 153, 153));
-		scrollPane.setPreferredSize(new Dimension(-1, 74));
+		scrollPane.setPreferredSize(new Dimension(-1, 90));
 		scrollPane.setViewportView(openPanel);
 		
 
@@ -562,13 +570,6 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		return false;
 	}
 
-	int icoimg = 32;
-	private JTextField txtScale;
-	private final JPanel rightSidePanel = new JPanel();
-	private final JButton btnHidePanel = new JButton("");
-	private final JScrollPane scrollPane = new JScrollPane();
-	private final JPanel openPanel = new JPanel();
-	private final JMenuItem mntmSaveAs = new JMenuItem("Save As...");
 	public void retool() {
 		toolBox.removeAll();
 		clearToolToolbar();
@@ -791,24 +792,4 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		// TODO Auto-generated method stub
 		
 	}
-}
-
-abstract class FileExtFilter extends FileFilter
-{
-	FileExtFilter(String ext)
-	{
-		this.ext = ext;
-	}
-	private String ext;
-	@Override
-	public abstract boolean accept(File f);
-
-	@Override
-	public abstract String getDescription();
-	
-	public String getExt()
-	{
-		return ext;
-	}
-	
 }

@@ -23,6 +23,7 @@ public class PaintUtils {
 		{
 			new DefaultFormatManager(key, DefaultFormatManager.registeredDesc.get(key)).registerHandler(key, false);
 		}
+		new PDJManager().registerHandler("pdj", false);
 	}
 	public static final FileFormatManager getSupportedImagesManager()
 	{

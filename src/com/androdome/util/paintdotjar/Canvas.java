@@ -13,8 +13,9 @@ import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 
 public class Canvas {
-	public BufferedImage canvasImage;
-	public int canvasOpacity = 255;
+	private BufferedImage canvasImage;
+	private int canvasOpacity = 255;
+	private String canvasName = "";
 	public Canvas(int w, int h)
 	{
 	    GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -41,7 +42,7 @@ public class Canvas {
 	public Canvas(BufferedImage img) {
 		canvasImage = img;
 	}
-	static BufferedImage deepCopy(BufferedImage bi) {
+	private static BufferedImage deepCopy(BufferedImage bi) {
 		 ColorModel cm = bi.getColorModel();
 		 boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
 		 WritableRaster raster = bi.copyData(null);
@@ -86,5 +87,13 @@ public class Canvas {
 
 	public BufferedImage getImage() {
 		return canvasImage;
+	}
+	public String getName() {
+		// TODO Auto-generated method stub
+		return canvasName;
+	}
+	public void setName(String name) {
+		// TODO Auto-generated method stub
+		canvasName = name;
 	}
 }

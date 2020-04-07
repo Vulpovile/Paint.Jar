@@ -22,7 +22,7 @@ import com.androdome.util.paintdotjar.plugin.tool.Tool;
 /**
  * PluginManager for the entire application. Loads, unloads, destroys, and registers events for plug-ins.
  */
-public class PluginManager {
+public final class PluginManager {
 
 	private MainInterface mainui;
 	private File pluginDir = new File("./plugins/");

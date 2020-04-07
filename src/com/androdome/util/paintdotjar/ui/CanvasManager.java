@@ -20,7 +20,7 @@ public class CanvasManager {
 
 	
 	public Canvas getSelectedCanvas() {
-		return cc.layers.get(cc.selectedIndex);
+		return cc.getLayers().get(cc.selectedIndex);
 	}
 	
 	public int getSelectedIndex() {
@@ -28,19 +28,19 @@ public class CanvasManager {
 	}
 	
 	public void setSelectedCanvas(Canvas canvas) {
-		int idx = cc.layers.indexOf(canvas);
+		int idx = cc.getLayers().indexOf(canvas);
 		if(idx > -1)
 			cc.selectedIndex = idx;
 	}
 	
 	public void setSelectedCanvas(int index) {
-		if(cc.layers.size() > index)
+		if(cc.getLayers().size() > index)
 			cc.selectedIndex = index;
 	}
 	
 	public Canvas getTemporaryCanvas(int index)
 	{
-		if(cc.layers.size() > index)
+		if(cc.getLayers().size() > index)
 		{
 			cc.temporaryCanvas = new Canvas(cc.width, cc.height);
 			cc.tempIndex = index;
@@ -51,9 +51,9 @@ public class CanvasManager {
 	
 	public Canvas getTemporaryCanvasClone(int index)
 	{
-		if(cc.layers.size() > index)
+		if(cc.getLayers().size() > index)
 		{
-			cc.temporaryCanvas = new Canvas(cc.layers.get(index));
+			cc.temporaryCanvas = new Canvas(cc.getLayers().get(index));
 			cc.tempIndex = index;
 			return cc.temporaryCanvas;
 		}
@@ -61,9 +61,9 @@ public class CanvasManager {
 	}
 	
 	public void applyTemporaryCanvas() {
-		if(cc.tempIndex > -1 && cc.tempIndex < cc.layers.size())
+		if(cc.tempIndex > -1 && cc.tempIndex < cc.getLayers().size())
 		{
-			Canvas canvas = cc.layers.get(cc.tempIndex);
+			Canvas canvas = cc.getLayers().get(cc.tempIndex);
 			if(canvas != null && cc.temporaryCanvas != null)
 			{
 				canvas.apply(cc.temporaryCanvas);
@@ -152,9 +152,9 @@ public class CanvasManager {
 	public BufferedImage getImage() {
 		BufferedImage image = new BufferedImage(cc.width, cc.height, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = image.getGraphics();
-		for(int i = 0; i < cc.layers.size(); i++)
+		for(int i = 0; i < cc.getLayers().size(); i++)
 		{
-			g.drawImage(cc.layers.get(i).canvasImage, 0, 0, null);
+			g.drawImage(cc.getLayers().get(i).getImage(), 0, 0, null);
 		}
 		return image;
 	}
