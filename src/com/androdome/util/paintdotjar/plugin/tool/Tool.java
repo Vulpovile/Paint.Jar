@@ -25,8 +25,8 @@ public abstract class Tool extends PropertyFilled{
 		return this.plugin;
 	}
 	/**
-	 * Returns the {@link JToolBar} that can be used by the tool.
-	 * This toolbar is cleared every time another tool is selected.
+	 * Returns the temporary {@link JToolBar} that can be used by the tool.
+	 * <b>This toolbar is cleared every time another tool is selected.</b>
 	 */
 	public final JToolBar getToolbar() {
 		return plugin.getMainInterface().getToolToolbar();
