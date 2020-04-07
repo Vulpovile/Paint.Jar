@@ -8,6 +8,7 @@ import java.awt.Image;
 import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -28,6 +29,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +47,7 @@ import javax.swing.JTextField;
 
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 import com.androdome.util.paintdotjar.plugin.RegisteredTool;
+import com.androdome.util.paintdotjar.prop.PropertyManager;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 import com.androdome.util.paintdotjar.ui.ColorBar;
 import com.androdome.util.paintdotjar.ui.ContainerButton;
@@ -51,13 +55,15 @@ import com.androdome.util.paintdotjar.ui.dialog.AboutDialog;
 import com.androdome.util.paintdotjar.ui.dialog.CrashDialog;
 import com.androdome.util.paintdotjar.ui.dialog.CreateDialog;
 import com.androdome.util.paintdotjar.ui.dialog.LooksAndFeels;
+import com.androdome.util.paintdotjar.util.FallbackFormatManager;
+import com.androdome.util.paintdotjar.util.FileFormatManager;
 import com.androdome.util.paintdotjar.util.PaintUtils;
 
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.BoxLayout;
 
-public class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener {
+public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener {
 
 	/**
 	 * 
@@ -82,19 +88,55 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	private JSlider sliderScale = new JSlider();
 	private JToolBar toolBarPlugin = new JToolBar();
 	private JToolBar toolBarTool = new JToolBar();
-	@SuppressWarnings("unused") //Will be used once I transfer loading and saving to FileFormatManagers
-	private MainInterfaceAbstractor abs = new MainInterfaceAbstractor(this);
+	private MainInterfaceAbstractor abstractor = new MainInterfaceAbstractor(this);
 	int maxOn = 3200;
 	int maxOff = 800;
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
+		
 		MainInterface frame = null;
 		try{
 		System.setProperty("sun.java2d.opengl", "true");
 		LookAndFeelInfo[] laf = UIManager.getInstalledLookAndFeels();
+
+		PropertyManager.loadProperties();
+		if(PropertyManager.getProperty("frame-decorated", "false").trim().equalsIgnoreCase("true"))
+		{
+			System.out.println("decorating");
+			JFrame.setDefaultLookAndFeelDecorated(true);
+			JDialog.setDefaultLookAndFeelDecorated(true);
+		}
 		boolean found = false;
+		if(!PropertyManager.getProperty("look-and-feel", "null").trim().equalsIgnoreCase("null"))
+		{
+			try {
+				UIManager.setLookAndFeel(PropertyManager.getProperty("look-and-feel"));
+				found = true;
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (UnsupportedLookAndFeelException e) {
+				e.printStackTrace();
+			}
+		}
+		if(!found)
 		for(int i = 0; i < laf.length; i++)
 		{
 			if(laf[i].getName().toLowerCase().contains("nimbus"))
@@ -136,20 +178,6 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 				}
 			}
 		}
-		if(!found)
-		{
-			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (UnsupportedLookAndFeelException e) {
-				e.printStackTrace();
-			}
-		}
 		//EventQueue.invokeLater(new Runnable() {
 			//public void run() {
 				//try
@@ -178,6 +206,7 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 		//addOpenCanvas(currentCanvas, true);
 		setTitle("Paint.jar");
 		manager.loadPlugins();
+		PaintUtils.setDefault();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 976, 702);
 		contentPane = new JPanel();
@@ -381,61 +410,31 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == mntmOpen)
 		{
-			final String names[] = ImageIO.getReaderFormatNames();
-			JFileChooser chooser = new JFileChooser();
-			chooser.setFileFilter(new FileFilter()
-            {
-				@Override
-				public boolean accept(File f) {
-					for(String name : names)
-					{
-						if(f.isDirectory())
-							return true;
-						if(f.getName().toLowerCase().endsWith(name.toLowerCase()))
-							return true;
-					}
-					return false;
-				}
-
-				@Override
-				public String getDescription() {
-						return "All Known Image Formats | *.?";
-				}
-               
-            });
-			
-			ArrayList<String> takenNames = new ArrayList<String>();
-			for(int i = 0; i < names.length; i++)
-			{
-				final String name = names[i].toLowerCase();
-				if(takenNames.contains(names[i].toLowerCase()))
-					continue;
-				takenNames.add(name);
-				chooser.addChoosableFileFilter(new FileFilter()
-	                {
-						@Override
-						public boolean accept(File f) {
-							if(f.isDirectory())
-								return true;
-							return f.getName().toLowerCase().endsWith("."+name);
-						}
-
-						@Override
-						public String getDescription() {
-							String ret = PaintUtils.registeredDesc.get(name);
-							if(ret == null)
-								return "Unknown Format | *."+name;
-							return ret + " | *."+name;
-						}
-	                   
-	                });
-			}
+			JFileChooser chooser = createChooser();
 			chooser.setMultiSelectionEnabled(true);
 			if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
 			{
+				PropertyManager.setProperty("last-dir", chooser.getCurrentDirectory().getAbsolutePath());
 				for(File f : chooser.getSelectedFiles())
 				{
-					boolean canRecover = false;
+					String extension = "";
+					if (f.getName().contains("."))
+					     extension = f.getName().substring(f.getName().lastIndexOf(".")+1).trim().toLowerCase();
+					FileFormatManager ffm = PaintUtils.registeredHandlers.get(extension);
+					if(ffm == null)
+						ffm = PaintUtils.FALLBACK;
+					CanvasContainer cc = ffm.loadCanvas(f, this.abstractor);
+					if(cc != null)
+					{
+						cc.setRelatedFile(f);
+						cc.setFormatName(extension);
+						addOpenCanvas(cc, true);
+					}
+					else if(!ffm.doesDisplayError())
+					{
+						JOptionPane.showMessageDialog(null, "The file is could not load!", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					/*boolean canRecover = false;
 					CanvasContainer cont = null;
 					BufferedImage img = null;
 					try {
@@ -468,7 +467,7 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 						JOptionPane.showMessageDialog(null, "Out of memory! Cannot load any more files!", "Error", JOptionPane.ERROR_MESSAGE);
 						e1.printStackTrace();
 						break;
-					}
+					}*/
 				}
 			}
 		}
@@ -518,119 +517,80 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 			new AboutDialog(manager).setVisible(true);
 		}
 	}
+	
+	
+	public JFileChooser createChooser()
+	{
+		JFileChooser chooser = new JFileChooser();
+		if(PropertyManager.getProperty("last-dir", "").trim()!="")
+		{
+			chooser.setCurrentDirectory(new File(PropertyManager.getProperty("last-dir")));
+		}
+		chooser.setAcceptAllFileFilterUsed(false);
+		for(String key : PaintUtils.registeredHandlers.keySet())
+		{
+			FileFormatManager ffm = PaintUtils.registeredHandlers.get(key);
+			if(ffm == null)
+				continue;
+			if(key.trim().equalsIgnoreCase(PaintUtils.DEFAULT_EXT))
+				chooser.setFileFilter(ffm);
+			else chooser.addChoosableFileFilter(ffm);
+		}
+		chooser.addChoosableFileFilter(PaintUtils.FALLBACK);
+		return chooser;
+	}
 
 	private boolean showSaveDialog(CanvasContainer cc) {
-		final String names[] = ImageIO.getWriterFormatNames();
-		JFileChooser chooser = new JFileChooser();
-		ArrayList<String> takenNames = new ArrayList<String>();
-		for(int i = 0; i < names.length; i++)
-		{
-			final String name = names[i].toLowerCase();
-			if(takenNames.contains(names[i].toLowerCase()))
-				continue;
-			takenNames.add(name);
-			if(cc.getFormatName() == null && name == "png")
-			{
-				chooser.setFileFilter(new FileExtFilter(name)
-                {
-					@Override
-					public boolean accept(File f) {
-						if(f.isDirectory())
-							return true;
-						return f.getName().toLowerCase().endsWith("."+name);
-					}
-
-					@Override
-					public String getDescription() {
-						String ret = PaintUtils.registeredDesc.get(name);
-						if(ret == null)
-							return "Unknown Format | *."+name;
-						return ret + " | *."+name;
-					}
-                   
-                });
-			}
-			else if(cc.getFormatName() == name)
-			{
-				chooser.setFileFilter(new FileExtFilter(name)
-                {
-					@Override
-					public boolean accept(File f) {
-						if(f.isDirectory())
-							return true;
-						return f.getName().toLowerCase().endsWith("."+name);
-					}
-
-					@Override
-					public String getDescription() {
-						String ret = PaintUtils.registeredDesc.get(name);
-						if(ret == null)
-							return "Unknown Format | *."+name;
-						return ret + " | *."+name;
-					}
-                   
-                });
-			}
-			else
-			{
-				chooser.addChoosableFileFilter(new FileExtFilter(name)
-                {
-					@Override
-					public boolean accept(File f) {
-						if(f.isDirectory())
-							return true;
-						return f.getName().toLowerCase().endsWith("."+name);
-					}
-
-					@Override
-					public String getDescription() {
-						String ret = PaintUtils.registeredDesc.get(name);
-						if(ret == null)
-							return "Unknown Format | *."+name;
-						return ret + " | *."+name;
-					}
-                   
-                });
-			}
-		}
+		JFileChooser chooser = createChooser();
 		chooser.setSelectedFile(cc.getRelatedFile());
 		if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
 		{
-			try{
+			File newFile = chooser.getSelectedFile();
 			String ext = "png";
-			boolean setExt = false;
-			if(chooser.getFileFilter() instanceof FileExtFilter)
+			PropertyManager.setProperty("last-dir", chooser.getCurrentDirectory().getAbsolutePath());
+			FileFormatManager ffm = (FileFormatManager)chooser.getFileFilter();
+			if(!(ffm instanceof FallbackFormatManager))
 			{
-				setExt = true;
-				ext = ((FileExtFilter)chooser.getFileFilter()).getExt();
+				
+				if(!newFile.getName().trim().toLowerCase().endsWith("."+ffm.extension))
+				{
+					newFile = new File(newFile.getAbsoluteFile()+"."+ffm.extension);
+				}
+				ext = ffm.extension;
 			}
-			BufferedImage image = cc.manager.getImage();
-			String file = chooser.getSelectedFile().getCanonicalPath();
-			if(!chooser.getSelectedFile().getName().contains(".") || (setExt && !file.toLowerCase().trim().endsWith("."+ext)))
-				file += "."+ext;
-			File newFile = new File(file);
-			ImageIO.write(image, ext, newFile);
-			cc.setChanged(false);
-			cc.setRelatedFile(newFile);
-			setName();
-			return true;
-			}catch (IOException e1) {
+			if(ffm.saveCanvas(cc, newFile, this.abstractor))
+			{
+				cc.setFormatName(ext);
+				cc.setChanged(false);
+				cc.setRelatedFile(newFile);
+				setName();
+				return true;
+			}
+			else if(!ffm.doesDisplayError())
+			{
 				JOptionPane.showMessageDialog(null, "The file could not be saved!", "Error", JOptionPane.ERROR_MESSAGE);
-				e1.printStackTrace();
 			}
 		}
 		return false;
 	}
 	private boolean saveNoDialog(CanvasContainer cc) {
-		try{
-			BufferedImage image = cc.manager.getImage();
-			ImageIO.write(image, "png", cc.getRelatedFile());
-			cc.setChanged(false);
-			setName();
-			return true;
-		}catch (IOException e1) {
-			JOptionPane.showMessageDialog(null, "The file could not be saved!", "Error", JOptionPane.ERROR_MESSAGE);
-			e1.printStackTrace();
+		FileFormatManager ffm = PaintUtils.registeredHandlers.get(cc.getFormatName().trim().toLowerCase());
+		if(ffm == null)
+		{
+			return showSaveDialog(cc);
+		}
+		else
+		{
+			if(ffm.saveCanvas(cc, cc.getRelatedFile(), this.abstractor))
+			{
+				cc.setChanged(false);
+				setName();
+				return true;
+			}
+			else if(!ffm.doesDisplayError())
+			{
+				JOptionPane.showMessageDialog(null, "The file could not be saved!", "Error", JOptionPane.ERROR_MESSAGE);
+			}
 		}
 		return false;
 	}
@@ -822,6 +782,47 @@ public class MainInterface extends JFrame implements ActionListener, ChangeListe
 	}
 	ColorBar getColorBar() {
 		return this.colorPanel;
+	}
+
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void windowClosing(WindowEvent e) {
+
+		try {
+			PropertyManager.saveProperties();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+	}
+
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 

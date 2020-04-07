@@ -13,10 +13,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
-import java.awt.Font;
-
 import javax.swing.JTextPane;
 import javax.swing.JList;
 
@@ -25,6 +21,10 @@ import com.androdome.util.paintdotjar.plugin.PluginManager;
 
 public class AboutDialog extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 
 	/**

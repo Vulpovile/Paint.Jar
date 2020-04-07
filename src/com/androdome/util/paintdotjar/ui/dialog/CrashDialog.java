@@ -19,13 +19,12 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JRootPane;
-import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 
 import com.androdome.util.paintdotjar.Canvas;
 import com.androdome.util.paintdotjar.MainInterface;
+import com.androdome.util.paintdotjar.prop.PropertyManager;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 
 public class CrashDialog extends JDialog implements ActionListener, WindowListener{
@@ -47,7 +46,7 @@ public class CrashDialog extends JDialog implements ActionListener, WindowListen
 		main = intf;
 		setModal(true);
 		setTitle("Crash!");
-		setBounds(100, 100, 660, 492);
+		setBounds(100, 100, 660, 505);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -58,8 +57,8 @@ public class CrashDialog extends JDialog implements ActionListener, WindowListen
 		String exceptionAsString = sw.toString();
 		textArea.setEditable(false);
 		textArea.setText(exceptionAsString);
-		JLabel lblPaintjarCanAttempt = new JLabel("Paint.jar can attempt to save your current files, however this is not guarenteed. To try, press the \"Attempt Recovery\" button");
-		lblPaintjarCanAttempt.setBounds(10, 396, 624, 14);
+		JLabel lblPaintjarCanAttempt = new JLabel("<html>Paint.jar can attempt to save your current files, however this is not guarenteed. To try, press the \"Attempt Recovery\" button</html>");
+		lblPaintjarCanAttempt.setBounds(10, 396, 624, 27);
 		contentPanel.add(lblPaintjarCanAttempt);
 
 		JScrollPane scrollPane = new JScrollPane();
@@ -119,6 +118,13 @@ public class CrashDialog extends JDialog implements ActionListener, WindowListen
 				JOptionPane.showMessageDialog(null, "Any recovered images will be in the \"recovery\" directory");
 			}
 		}
+
+		try {
+			PropertyManager.saveProperties();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		System.exit(1);
 	}
 
@@ -128,10 +134,22 @@ public class CrashDialog extends JDialog implements ActionListener, WindowListen
 	}
 
 	public void windowClosing(WindowEvent e) {
+		try {
+			PropertyManager.saveProperties();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		System.exit(1);
 	}
 
 	public void windowClosed(WindowEvent e) {
+		try {
+			PropertyManager.saveProperties();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		System.exit(1);
 	}
 

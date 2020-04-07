@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -20,6 +21,7 @@ import javax.swing.JList;
 import javax.swing.JCheckBox;
 
 import com.androdome.util.paintdotjar.MainInterface;
+import com.androdome.util.paintdotjar.prop.PropertyManager;
 
 public class LooksAndFeels extends JDialog {
 
@@ -83,6 +85,14 @@ public class LooksAndFeels extends JDialog {
 								SwingUtilities.updateComponentTreeUI(mintf);
 								JFrame.setDefaultLookAndFeelDecorated(chckbxDecorateFrame.isSelected());
 								JDialog.setDefaultLookAndFeelDecorated(chckbxDecorateFrame.isSelected());
+								PropertyManager.setProperty("frame-decorated", String.valueOf(chckbxDecorateFrame.isSelected()));
+								PropertyManager.setProperty("look-and-feel", slaf.getClassName());
+								try {
+									PropertyManager.saveProperties();
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
 								mintf.dispose();
 								mintf.setVisible(true);
 							} catch (ClassNotFoundException e1) {

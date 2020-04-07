@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 
-public class MainInterfaceAbstractor {
+public final class MainInterfaceAbstractor {
 	MainInterface mf;
 	MainInterfaceAbstractor(MainInterface mf)
 	{

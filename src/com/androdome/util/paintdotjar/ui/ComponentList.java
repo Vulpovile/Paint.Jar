@@ -10,6 +10,10 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 public class ComponentList extends Container{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int selectedIndex = -1;
 	private ArrayList<Component> list = new ArrayList<Component>();
 	public ComponentList()
@@ -37,6 +41,12 @@ public class ComponentList extends Container{
 		super.add(cPanel);
 		return comp;
 	}
+	
+	public int getSelectedIndex()
+	{
+		return selectedIndex;
+	}
+	
 	public void remove(Component comp)
 	{
 		list.remove(comp);

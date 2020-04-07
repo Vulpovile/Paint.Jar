@@ -2,17 +2,15 @@ package com.androdome.util.paintdotjar.util;
 
 import java.util.HashMap;
 
+
 public class PaintUtils {
+	public final static String DEFAULT_EXT = "png";
+	public final static FallbackFormatManager FALLBACK = new FallbackFormatManager();
 	public static HashMap<String, FileFormatManager> registeredHandlers = new HashMap<String, FileFormatManager>();
-	public static HashMap<String, String> registeredDesc = new HashMap<String, String>();
-	static
-	{
-		registeredDesc.put("jpg", "JPEG Image");
-		registeredDesc.put("jpeg", "JPEG2000 Image");
-		registeredDesc.put("png", "Portable Network Graphics Image");
-		registeredDesc.put("gif", "Graphics Interchange Format Image");
-		registeredDesc.put("bmp", "Bitmap Image");
-		registeredDesc.put("wbmp", "Wireless Application Protocol Bitmap Image");
-		registeredDesc.put("ico", "Icon Image");
+	public static final void setDefault() {
+		for(String key : DefaultManager.registeredDesc.keySet())
+		{
+			new DefaultManager(key, DefaultManager.registeredDesc.get(key)).registerHandler(key, false);
+		}
 	}
 }

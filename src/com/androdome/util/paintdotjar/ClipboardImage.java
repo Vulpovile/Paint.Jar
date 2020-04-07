@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 //Made by camickr at https://stackoverflow.com/questions/7834768/setting-images-to-clipboard-java!
-public class ClipboardImage
+public final class ClipboardImage
 {
     /**
      *  Retrieve an image from the system clipboard.

@@ -8,6 +8,33 @@ import com.androdome.util.paintdotjar.MainInterfaceAbstractor;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 
 public abstract class FileFormatManager extends FileFilter{
+
+	private boolean displaysError = false;
+	public final String extension;
+	
+	public FileFormatManager(String ext)
+	{
+		extension = ext;
+	}
+	
+	/**
+	 * Sets whether this manager will handle it's own error message.
+	 * @param doesDisplay  Whether the error message will be handled by this manager
+	 */
+	public final void setDisplayError(boolean doesDisplay)
+	{
+		displaysError = true;
+	}
+	
+	/**
+	 * Returns whether this manager will handle it's own error message.
+	 * @return <b>boolean</b>  Whether the error message will be handled by this manager
+	 */
+	public final boolean doesDisplayError()
+	{
+		return displaysError;
+	}
+	
 	/**
 	 * Return codes for the registerHandler function<br>
 	 */
@@ -57,6 +84,14 @@ public abstract class FileFormatManager extends FileFilter{
 		{
 			return RegisterCode.FAIL; //When would this ever be called?
 		}
+	}
+	/**
+	 * Unregisters all the registered extensions handled by this plugin.
+	 * This does not re-instate the replaced handler if force is used
+	 */
+	public void unregister()
+	{
+		//TODO
 	}
 	@Override
 	public abstract boolean accept(File f);
