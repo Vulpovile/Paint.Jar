@@ -11,10 +11,17 @@ public abstract class FileFormatManager extends FileFilter{
 
 	private boolean displaysError = false;
 	public final String extension;
+	public final boolean supportsLayers;
 	
 	public FileFormatManager(String ext)
 	{
 		extension = ext;
+		supportsLayers = false;
+	}
+	public FileFormatManager(String ext, boolean supportsLayers)
+	{
+		extension = ext;
+		this.supportsLayers = supportsLayers;
 	}
 	
 	/**

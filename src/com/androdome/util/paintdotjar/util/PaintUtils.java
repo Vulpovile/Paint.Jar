@@ -1,16 +1,75 @@
 package com.androdome.util.paintdotjar.util;
 
-import java.util.HashMap;
+import java.io.File;
+import java.util.Comparator;
+import java.util.TreeMap;
+
+import com.androdome.util.paintdotjar.MainInterfaceAbstractor;
+import com.androdome.util.paintdotjar.ui.CanvasContainer;
 
 
 public class PaintUtils {
 	public final static String DEFAULT_EXT = "png";
 	public final static FallbackFormatManager FALLBACK = new FallbackFormatManager();
-	public static HashMap<String, FileFormatManager> registeredHandlers = new HashMap<String, FileFormatManager>();
+	public static TreeMap<String, FileFormatManager> registeredHandlers = new TreeMap<String, FileFormatManager>(
+			new Comparator<String>() {
+				public int compare(String o1, String o2) {
+					// TODO Auto-generated method stub
+					return o1.compareTo(o2);
+				}
+				});
 	public static final void setDefault() {
-		for(String key : DefaultManager.registeredDesc.keySet())
+		for(String key : DefaultFormatManager.registeredDesc.keySet())
 		{
-			new DefaultManager(key, DefaultManager.registeredDesc.get(key)).registerHandler(key, false);
+			new DefaultFormatManager(key, DefaultFormatManager.registeredDesc.get(key)).registerHandler(key, false);
 		}
+	}
+	public static final FileFormatManager getSupportedImagesManager()
+	{
+		return new FileFormatManager("."){
+
+			@Override
+			public boolean accept(File f) {
+				for(FileFormatManager ffm : registeredHandlers.values())
+				{
+					if(ffm.accept(f))
+						return true;
+				}
+				return false;
+			}
+
+			@Override
+			public String getDescription() {
+				// TODO Auto-generated method stub
+				return "All Supported Image Files | *.?";
+			}
+
+			@Override
+			public CanvasContainer loadCanvas(File file,
+					MainInterfaceAbstractor mia) {
+				for(FileFormatManager ffm : registeredHandlers.values())
+				{
+					if(ffm.accept(file))
+					{
+						return ffm.loadCanvas(file, mia);
+					}
+				}
+				return null;
+			}
+
+			@Override
+			public boolean saveCanvas(CanvasContainer cc, File file,
+					MainInterfaceAbstractor mia) {
+				for(FileFormatManager ffm : registeredHandlers.values())
+				{
+					if(ffm.accept(file))
+					{
+						return ffm.saveCanvas(cc, file, mia);
+					}
+				}
+				return false;
+			}
+			
+		};
 	}
 }

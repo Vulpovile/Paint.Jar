@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 
-import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -410,7 +409,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == mntmOpen)
 		{
-			JFileChooser chooser = createChooser();
+			JFileChooser chooser = createChooser(true);
 			chooser.setMultiSelectionEnabled(true);
 			if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
 			{
@@ -434,40 +433,6 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 					{
 						JOptionPane.showMessageDialog(null, "The file is could not load!", "Error", JOptionPane.ERROR_MESSAGE);
 					}
-					/*boolean canRecover = false;
-					CanvasContainer cont = null;
-					BufferedImage img = null;
-					try {
-						img = ImageIO.read(f);
-						if(img == null)
-						{
-							JOptionPane.showMessageDialog(null, "The file has no valid reader associated to it!", "Error", JOptionPane.ERROR_MESSAGE);
-							return;
-						}
-						//contentPane.remove(currentCanvas);
-						cont = new CanvasContainer(img, manager, colorPanel);
-						cont.setRelatedFile(chooser.getSelectedFile());
-						canRecover = false;
-						addOpenCanvas(cont, true);
-					} catch (Exception e1) {
-						JOptionPane.showMessageDialog(null, "The file is invalid!", "Error", JOptionPane.ERROR_MESSAGE);
-						e1.printStackTrace();
-					}
-					catch (OutOfMemoryError e1) {
-						img = null;
-						cont = null;
-						System.gc();
-						if(!canRecover)
-						{
-							this.dispose();
-							this.currentCanvas = null;
-							System.gc();
-							new CrashDialog(e1, this).setVisible(true);
-						}
-						JOptionPane.showMessageDialog(null, "Out of memory! Cannot load any more files!", "Error", JOptionPane.ERROR_MESSAGE);
-						e1.printStackTrace();
-						break;
-					}*/
 				}
 			}
 		}
@@ -519,9 +484,11 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	}
 	
 	
-	public JFileChooser createChooser()
+	public JFileChooser createChooser(boolean containsAll)
 	{
 		JFileChooser chooser = new JFileChooser();
+		if(containsAll)
+			chooser.setFileFilter(PaintUtils.getSupportedImagesManager());
 		if(PropertyManager.getProperty("last-dir", "").trim()!="")
 		{
 			chooser.setCurrentDirectory(new File(PropertyManager.getProperty("last-dir")));
@@ -532,7 +499,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 			FileFormatManager ffm = PaintUtils.registeredHandlers.get(key);
 			if(ffm == null)
 				continue;
-			if(key.trim().equalsIgnoreCase(PaintUtils.DEFAULT_EXT))
+			if(!containsAll && key.trim().equalsIgnoreCase(PaintUtils.DEFAULT_EXT))
 				chooser.setFileFilter(ffm);
 			else chooser.addChoosableFileFilter(ffm);
 		}
@@ -541,7 +508,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	}
 
 	private boolean showSaveDialog(CanvasContainer cc) {
-		JFileChooser chooser = createChooser();
+		JFileChooser chooser = createChooser(false);
 		chooser.setSelectedFile(cc.getRelatedFile());
 		if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
 		{

@@ -1,7 +1,7 @@
 package com.androdome.util.paintdotjar.util;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -11,15 +11,15 @@ import com.androdome.util.paintdotjar.ui.CanvasContainer;
 import com.androdome.util.paintdotjar.util.FileFormatManager;
 
 
-public final class DefaultManager extends FileFormatManager {
+public final class DefaultFormatManager extends FileFormatManager {
 
 	public final String ext;
 	public final String desc;
 	public static final HashMap<String, String> registeredDesc = new HashMap<String, String>();
 	static
 	{
-		registeredDesc.put("jpg", "JPEG Image");
-		registeredDesc.put("jpeg", "JPEG2000 Image");
+		registeredDesc.put("jpg", "JPEG 8.3 Image");
+		registeredDesc.put("jpeg", "JPEG Image");
 		registeredDesc.put("png", "Portable Network Graphics Image");
 		registeredDesc.put("gif", "Graphics Interchange Format Image");
 		registeredDesc.put("bmp", "Bitmap Image");
@@ -27,7 +27,7 @@ public final class DefaultManager extends FileFormatManager {
 		registeredDesc.put("ico", "Icon Image");
 	}
 	
-	public DefaultManager(String ext, String desc)
+	public DefaultFormatManager(String ext, String desc)
 	{
 		super(ext);
 		this.ext = ext;
@@ -50,7 +50,10 @@ public final class DefaultManager extends FileFormatManager {
 	public CanvasContainer loadCanvas(File file, MainInterfaceAbstractor mia) {
 		// TODO Auto-generated method stub
 		try {
-			return mia.createCanvas(ImageIO.read(file));
+			BufferedImage img = ImageIO.read(file);
+			if(img == null)
+				return null;
+			return mia.createCanvas(img);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
