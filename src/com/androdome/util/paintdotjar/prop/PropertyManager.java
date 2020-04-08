@@ -6,8 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import com.androdome.util.paintdotjar.util.PaintUtils;
+
 public final class PropertyManager {
-	private static File propFile = new File("./pdj.prop");
+	private static File propFile = new File(PaintUtils.getJarDir(), "pdj.prop");
 	private static Properties prop = new Properties();
 	public static void saveProperties() throws IOException
 	{

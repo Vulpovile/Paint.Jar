@@ -16,6 +16,7 @@ import com.androdome.util.paintdotjar.MainInterface;
 import com.androdome.util.paintdotjar.plugin.event.Event;
 import com.androdome.util.paintdotjar.plugin.event.EventListener;
 import com.androdome.util.paintdotjar.plugin.tool.Tool;
+import com.androdome.util.paintdotjar.util.PaintUtils;
 
 
 
@@ -25,7 +26,7 @@ import com.androdome.util.paintdotjar.plugin.tool.Tool;
 public final class PluginManager {
 
 	private MainInterface mainui;
-	private File pluginDir = new File("./plugins/");
+	private File pluginDir = new File(PaintUtils.getJarDir(), "plugins/");
 	//ClassLoader mainLoader = ClassLoader.getSystemClassLoader();
 	public static final float API_VERSION = 1.0F;
 	

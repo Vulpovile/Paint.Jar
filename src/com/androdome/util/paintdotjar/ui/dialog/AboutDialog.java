@@ -18,6 +18,7 @@ import javax.swing.JList;
 
 import com.androdome.util.paintdotjar.MainInterface;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
+import javax.swing.SwingConstants;
 
 public class AboutDialog extends JDialog {
 
@@ -34,7 +35,7 @@ public class AboutDialog extends JDialog {
 		setModal(true);
 		setResizable(false);
 		setTitle("About");
-		setBounds(100, 100, 417, 455);
+		setBounds(100, 100, 417, 500);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -76,6 +77,15 @@ public class AboutDialog extends JDialog {
 		JList list = new JList();
 		list.setListData(manager.getPlugins().toArray());
 		scrollPane_1.setViewportView(list);
+		
+		JLabel lblPluginDirectory = new JLabel("Plugin Directory:");
+		lblPluginDirectory.setBounds(10, 384, 391, 14);
+		contentPanel.add(lblPluginDirectory);
+		
+		JLabel label = new JLabel("<html>"+manager.getPluginDirectory()+"</html>");
+		label.setVerticalAlignment(SwingConstants.TOP);
+		label.setBounds(10, 398, 391, 30);
+		contentPanel.add(label);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
