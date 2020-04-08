@@ -33,16 +33,6 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	int tempIndex = -1;
 	int width = 800;
 	int height = 600;
-	
-	public int getImageWidth()
-	{
-		return width;
-	}
-	public int getImageHeight()
-	{
-		return height;
-	}
-	
 	int xoffset = 0;
 	int yoffset = 0;
 	int selectedIndex = 0;
@@ -55,33 +45,6 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	public enum CanvasRenderMode {
 		NORMAL,
 		TILEDRAW
-	}
-	
-	public void setScale(float scale)
-	{
-		this.scale = scale;
-	}
-	public float getScale()
-	{
-		return this.scale;
-	}
-	
-	public CanvasRenderMode canvasRenderMode = CanvasRenderMode.TILEDRAW;
-	public ContainerButton containerButton = null;
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * Create the panel.
-	 */
-	private void addListeners()
-	{
-		this.addMouseListener(this);
-		this.addKeyListener(this);
-		this.addMouseMotionListener(this);
-		this.addMouseWheelListener(this);
 	}
 	
 	public CanvasContainer(PluginManager mi, ColorBar color) {
@@ -110,6 +73,42 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 		this.height = img.getHeight();
 		layers.add(new Canvas(img));
 		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+	}
+	
+	public int getImageWidth()
+	{
+		return width;
+	}
+	public int getImageHeight()
+	{
+		return height;
+	}
+	
+	public void setScale(float scale)
+	{
+		this.scale = scale;
+	}
+	public float getScale()
+	{
+		return this.scale;
+	}
+	
+	public CanvasRenderMode canvasRenderMode = CanvasRenderMode.TILEDRAW;
+	public ContainerButton containerButton = null;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Create the panel.
+	 */
+	private void addListeners()
+	{
+		this.addMouseListener(this);
+		this.addKeyListener(this);
+		this.addMouseMotionListener(this);
+		this.addMouseWheelListener(this);
 	}
 	
 	public void rescaleCanvases()
