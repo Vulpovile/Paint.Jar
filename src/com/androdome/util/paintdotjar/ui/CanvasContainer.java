@@ -94,7 +94,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	}
 	
 	public CanvasRenderMode canvasRenderMode = CanvasRenderMode.TILEDRAW;
-	public ContainerButton containerButton = null;
+	public ContainerToggleButton containerButton = null;
 	/**
 	 * 
 	 */

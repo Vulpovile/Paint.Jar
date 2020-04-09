@@ -21,6 +21,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,11 +48,12 @@ import com.androdome.util.paintdotjar.plugin.RegisteredTool;
 import com.androdome.util.paintdotjar.prop.PropertyManager;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 import com.androdome.util.paintdotjar.ui.ColorBar;
-import com.androdome.util.paintdotjar.ui.ContainerButton;
+import com.androdome.util.paintdotjar.ui.ContainerToggleButton;
 import com.androdome.util.paintdotjar.ui.dialog.AboutDialog;
 import com.androdome.util.paintdotjar.ui.dialog.CrashDialog;
 import com.androdome.util.paintdotjar.ui.dialog.CreateDialog;
 import com.androdome.util.paintdotjar.ui.dialog.LooksAndFeels;
+import com.androdome.util.paintdotjar.ui.dialog.UnsavedCanvasDialog;
 import com.androdome.util.paintdotjar.util.FallbackFormatManager;
 import com.androdome.util.paintdotjar.util.FileFormatManager;
 import com.androdome.util.paintdotjar.util.PaintUtils;
@@ -96,6 +98,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	private final JMenuItem mntmSaveAs = new JMenuItem("Save As...");
 	private final static int maxOn = 3200;
 	private final static int maxOff = 800;
+	private final JMenuItem mntmTestDialog = new JMenuItem("Test Dialog");
 	/**
 	 * Launch the application.
 	 */
@@ -255,6 +258,13 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		mnCanvasDispaly.add(mntmStandard);
 		
 		mnCanvasDispaly.add(mntmTiledraw);
+		mntmTestDialog.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new UnsavedCanvasDialog(openCanvases.toArray(new CanvasContainer[openCanvases.size()])).setVisible(true);
+			}
+		});
+		
+		mnView.add(mntmTestDialog);
 		
 		JMenu mnEdit = new JMenu("Edit");
 		menuBar.add(mnEdit);
@@ -372,9 +382,9 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		{
 			for(Component c : openPanel.getComponents())
 			{
-				if(c instanceof ContainerButton)
+				if(c instanceof ContainerToggleButton)
 				{
-					ContainerButton btn = (ContainerButton)c;
+					ContainerToggleButton btn = (ContainerToggleButton)c;
 					if(btn.getCanvasContainer() == canvas)
 					{
 						openPanel.remove(btn);
@@ -398,7 +408,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	
 	public void addOpenCanvas(final CanvasContainer canvas, boolean switchTo) {
 		this.openCanvases.add(canvas);
-		final ContainerButton btn = new ContainerButton(canvas, new Dimension(64, 64));
+		final ContainerToggleButton btn = new ContainerToggleButton(canvas, new Dimension(64, 64));
 		this.openPanel.add(btn);
 		btn.addActionListener(new ActionListener(){
 
@@ -715,9 +725,9 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 			contentPane.remove(currentCanvas);
 			for(Component c : openPanel.getComponents())
 			{
-				if(c instanceof ContainerButton)
+				if(c instanceof ContainerToggleButton)
 				{
-					ContainerButton contButton = (ContainerButton)c;
+					ContainerToggleButton contButton = (ContainerToggleButton)c;
 					if(contButton.getCanvasContainer() == cc)
 						contButton.setSelected(true);
 					else contButton.setSelected(false);
