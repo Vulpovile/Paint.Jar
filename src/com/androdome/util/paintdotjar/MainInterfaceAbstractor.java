@@ -37,4 +37,13 @@ public final class MainInterfaceAbstractor {
 	{
 		return new CanvasContainer(image, mf.getPluginManager(), mf.getColorBar());
 	}
+	
+	public boolean showSaveDialog(CanvasContainer cc)
+	{
+		return mf.showSaveDialog(cc);
+	}
+	public boolean saveNoDialog(CanvasContainer cc)
+	{
+		return mf.saveNoDialog(cc);
+	}
 }

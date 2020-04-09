@@ -215,7 +215,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		setTitle("Paint.jar");
 		manager.loadPlugins();
 		PaintUtils.setDefault();
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 976, 702);
 		contentPane = new JPanel();
 		contentPane.setBorder(null);
@@ -260,7 +260,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		mnCanvasDispaly.add(mntmTiledraw);
 		mntmTestDialog.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new UnsavedCanvasDialog(openCanvases.toArray(new CanvasContainer[openCanvases.size()])).setVisible(true);
+				new UnsavedCanvasDialog(MainInterface.this.abstractor, openCanvases).setVisible(true);
 			}
 		});
 		
@@ -355,7 +355,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		mntmStandard.addActionListener(this);
 		mntmTiledraw.addActionListener(this);
 		mntmAbout.addActionListener(this);
-
+		this.addWindowListener(this);
 	}
 
 	public void requestClose(CanvasContainer canvas) {
@@ -525,7 +525,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		return chooser;
 	}
 
-	private boolean showSaveDialog(CanvasContainer cc) {
+	boolean showSaveDialog(CanvasContainer cc) {
 		JFileChooser chooser = createChooser(false);
 		chooser.setSelectedFile(cc.getRelatedFile());
 		if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
@@ -558,7 +558,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		}
 		return false;
 	}
-	private boolean saveNoDialog(CanvasContainer cc) {
+	boolean saveNoDialog(CanvasContainer cc) {
 		FileFormatManager ffm = PaintUtils.registeredHandlers.get(cc.getFormatName().trim().toLowerCase());
 		if(ffm == null)
 		{
@@ -775,12 +775,27 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+		ArrayList<CanvasContainer> unsaved = new ArrayList<CanvasContainer>();
+		for(CanvasContainer c : openCanvases)
+		{
+			if(c.isChanged())
+				unsaved.add(c);
+		}
+		if(unsaved.size() > 0)
+		{
+			UnsavedCanvasDialog dialog = new UnsavedCanvasDialog(this.abstractor, unsaved);
+			dialog.setLocationRelativeTo(this);
+			dialog.setModal(true);
+			dialog.setVisible(true);
+			if(dialog.canDispose())
+				dispose();
+		}
+		else dispose();
 	}
 
 	public void windowClosed(WindowEvent e) {
 		// TODO Auto-generated method stub
-		
+		System.exit(0);
 	}
 
 	public void windowIconified(WindowEvent e) {
