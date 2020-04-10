@@ -8,14 +8,23 @@ import java.awt.ImageCapabilities;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
+import java.io.IOException;
+import java.util.HashMap;
+
+import javax.swing.JOptionPane;
 
 import com.androdome.util.paintdotjar.Canvas;
+import com.androdome.util.paintdotjar.managers.HistoryEntry;
+import com.androdome.util.paintdotjar.managers.HistoryManager;
+import com.androdome.util.paintdotjar.plugin.JavaPlugin;
 
 public class CanvasManager {
-
+	//TODO move to managers
 	private CanvasContainer cc;
+	private HistoryManager historyManager;
 	CanvasManager(CanvasContainer cc) {
 		this.cc = cc;
+		this.historyManager = new HistoryManager(cc);
 	}
 
 	
@@ -59,13 +68,31 @@ public class CanvasManager {
 		}
 		return null;
 	}
+	@Deprecated
+	public void applyTemporaryCanvas(){
+		applyTemporaryCanvas("Applied Canvas");
+	}
 	
-	public void applyTemporaryCanvas() {
+	public void applyTemporaryCanvas(String message) {
+		applyTemporaryCanvas(message, null);
+	}
+	
+	public void applyTemporaryCanvas(String message, Image icon) {
+		
 		if(cc.tempIndex > -1 && cc.tempIndex < cc.getLayers().size())
 		{
 			Canvas canvas = cc.getLayers().get(cc.tempIndex);
 			if(canvas != null && cc.temporaryCanvas != null)
 			{
+				try
+				{
+					historyManager.pushChange(new HistoryEntry(HistoryManager.Operations.APPLY_CANVAS, cc.tempIndex, canvas, message, icon));
+				}
+				catch (IOException e)
+				{
+					JOptionPane.showMessageDialog(null, "An error occured when trying to save history", "Error", JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
+				}
 				canvas.apply(cc.temporaryCanvas);
 			}
 		}
@@ -173,6 +200,77 @@ public class CanvasManager {
 		return cc.getScale();
 	}
 
+	private HashMap<JavaPlugin, HashMap<String, Object>> exdatamap = new HashMap<JavaPlugin, HashMap<String, Object>>();
+	/**
+	 * Creates a or edits a store value for the plugin in the canvas file for details such as image format and quality
+	 * @param plugin
+	 * @param key
+	 * @param value
+	 * @return success
+	 */
+	public boolean setExtra(JavaPlugin plugin, String key, Object value)
+	{
+		if(plugin == null)
+			return false;
+		if(exdatamap.get(plugin) == null)
+			exdatamap.put(plugin, new HashMap<String, Object>());
+		/*if(exdatamap.get(plugin).get(key) == null && exdatamap.get(plugin).size() >= 40)
+		{
+			return false;
+		}*/
+		exdatamap.get(plugin).put(key, value);
+		return true;
+	}
+	/**
+	 * Gets a set value if it exists in the data store
+	 * @param plugin
+	 * @param key
+	 * @return value
+	 */
+	public Object getExtra(JavaPlugin plugin, String key)
+	{
+		if(plugin == null || exdatamap.get(plugin) == null)
+			return null;
+		return exdatamap.get(plugin).get(key);
+	}
+	/**
+	 * Deletes a set value in the data store if it exists
+	 * @param plugin
+	 * @param key
+	 * @return
+	 */
+	public Object clearExtra(JavaPlugin plugin, String key)
+	{
+		if(plugin == null || exdatamap.get(plugin) == null)
+			return null;
+		return exdatamap.get(plugin).remove(key);
+	}
+	/**
+	 * Deletes all data in the datastore for a plugin
+	 * @param plugin
+	 * @param key
+	 * @return
+	 */
+	public void clearAllExtra(JavaPlugin plugin)
+	{
+		if(plugin != null)
+			exdatamap.remove(plugin);
+	}
+	/**
+	 * Deletes all data in the datastore for a plugin
+	 * @param plugin
+	 * @param key
+	 * @return
+	 */
+	public void purgeExtra()
+	{
+		exdatamap.clear();
+	}
 
+
+	public HistoryManager getHistoryManager() {
+		// TODO Auto-generated method stub
+		return historyManager;
+	}
 	
 }

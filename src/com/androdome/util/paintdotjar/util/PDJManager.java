@@ -92,7 +92,7 @@ public final class PDJManager extends FileFormatManager {
 				ze = in.getNextEntry();
 				if(ze == null)
 					throw new InvalidMetadataException("Layer metadata not found");
-				int layerOpacity = dis.readInt();
+				short layerOpacity = dis.readShort();
 				String layername = dis.readUTF();
 				in.closeEntry();
 				ze = in.getNextEntry();
@@ -168,7 +168,7 @@ public final class PDJManager extends FileFormatManager {
 			{
 				e = new ZipEntry(i+".bmd");
 				out.putNextEntry(e);
-				dos.writeInt(c.getOpacity());
+				dos.writeShort(c.getOpacity());
 				dos.writeUTF(c.getName());
 				out.closeEntry();
 				e = new ZipEntry(i+".png");

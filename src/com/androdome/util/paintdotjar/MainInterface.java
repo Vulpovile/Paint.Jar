@@ -43,6 +43,7 @@ import javax.swing.JSlider;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
+import com.androdome.util.paintdotjar.managers.ClipboardImage;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 import com.androdome.util.paintdotjar.plugin.RegisteredTool;
 import com.androdome.util.paintdotjar.prop.PropertyManager;
@@ -103,7 +104,6 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException e) {

@@ -17,13 +17,11 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.JComponent;
 import javax.swing.border.BevelBorder;
 
 import com.androdome.util.paintdotjar.Canvas;
-import com.androdome.util.paintdotjar.plugin.JavaPlugin;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 
 public class CanvasContainer extends JComponent implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener{
@@ -48,39 +46,6 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	private PluginManager pluginManager;
 	private Shape selection = null;
 	public CanvasManager manager = new CanvasManager(this);
-	private HashMap<JavaPlugin, HashMap<String, Object>> exdatamap = new HashMap<JavaPlugin, HashMap<String, Object>>();
-	
-	public void setExtra(JavaPlugin plugin, String key, Object value)
-	{
-		if(plugin == null)
-			return;
-		if(exdatamap.get(plugin) == null)
-			exdatamap.put(plugin, new HashMap<String, Object>());
-		exdatamap.get(plugin).put(key, value);
-	}
-	public Object getExtra(JavaPlugin plugin, String key)
-	{
-		if(plugin == null || exdatamap.get(plugin) == null)
-			return null;
-		return exdatamap.get(plugin).get(key);
-	}
-	
-	public Object clearExtra(JavaPlugin plugin, String key)
-	{
-		if(plugin == null || exdatamap.get(plugin) == null)
-			return null;
-		return exdatamap.get(plugin).remove(key);
-	}
-	
-	public void clearAllExtra(JavaPlugin plugin)
-	{
-		if(plugin != null)
-			exdatamap.remove(plugin);
-	}
-	public void PurgeExtra()
-	{
-		exdatamap.clear();
-	}
 	
 	public enum CanvasRenderMode {
 		NORMAL,
@@ -235,7 +200,10 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 			g2d.drawImage(renderableImage, x, y, (int)(width*scale), (int)(height*scale), this);
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		g2d.drawRect(x-1, y-1, (int)(width*scale)+1, (int)(height*scale)+1);
-		g2d.draw(selection);
+		if(selection != null)
+		{
+			g2d.draw(selection);
+		}
 		if(this.pluginManager.getTool() != null)
 		{
 			this.pluginManager.getTool().onCanvasPaint(g2d, new Rectangle(x, y, (int)(width*scale), (int)(height*scale)), this.manager);

@@ -11,10 +11,51 @@ import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
-public class Canvas {
+import javax.imageio.ImageIO;
+
+public class Canvas{
+	
+	public static byte[] serialize(Canvas canvas) throws IOException
+	{
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		GZIPOutputStream gz = new GZIPOutputStream(bos);
+		DataOutputStream dos = new DataOutputStream(gz);
+		dos.writeUTF(canvas.canvasName);
+		dos.writeShort(canvas.canvasOpacity);
+		ImageIO.write(canvas.canvasImage, "png", dos);
+		dos.close();
+		gz.close();
+		bos.close();
+		return bos.toByteArray();
+	}
+	
+	public static Canvas unserialize(byte[] serialized) throws IOException
+	{
+		ByteArrayInputStream bis = new ByteArrayInputStream(serialized);
+		GZIPInputStream gz = new GZIPInputStream(bis);
+		DataInputStream dis = new DataInputStream(gz);
+		String name = dis.readUTF();
+		short opacity = dis.readShort();
+		BufferedImage image = ImageIO.read(dis);
+		dis.close();
+		gz.close();
+		bis.close();
+		Canvas canvas = new Canvas(image);
+		canvas.canvasOpacity = opacity;
+		canvas.canvasName = name;
+		return canvas;
+	}
+	
 	private BufferedImage canvasImage;
-	private int canvasOpacity = 255;
+	private short canvasOpacity = 255;
 	private String canvasName = "";
 	public Canvas(int w, int h)
 	{
@@ -27,7 +68,7 @@ public class Canvas {
 		g.fillRect(0, 0, w, h);
 		//canvasImage.setRGB(w-1, h-1, (new Color(0.0f, 0.0f, 0.0f, 1.0f)).getRGB());
 	}
-	public void setOpacity(int opacity)
+	public void setOpacity(short opacity)
 	{
 		if(opacity < 0)
 			opacity = 0;

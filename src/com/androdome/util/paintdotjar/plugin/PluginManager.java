@@ -229,12 +229,12 @@ public final class PluginManager {
 				{
 					if(jars[i].getName().endsWith(".jar"))
 					{
-						URLClassLoader classLoader = new URLClassLoader(new URL[]{jars[i].toURL()});
+						URLClassLoader classLoader = new URLClassLoader(new URL[]{jars[i].toURI().toURL()});
 						BufferedReader reader = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("pluginfo.cfg")));
 						pluginName = reader.readLine();
 						String mainClassStr = reader.readLine();
 						reader.close();
-						urls.add(jars[i].toURL());
+						urls.add(jars[i].toURI().toURL());
 						mainClass.add(mainClassStr);
 						name.add(pluginName);
 					}

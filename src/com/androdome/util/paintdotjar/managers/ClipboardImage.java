@@ -1,4 +1,4 @@
-package com.androdome.util.paintdotjar;
+package com.androdome.util.paintdotjar.managers;
 
 import java.awt.Image;
 import java.awt.Toolkit;

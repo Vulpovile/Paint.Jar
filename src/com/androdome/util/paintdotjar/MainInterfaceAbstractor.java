@@ -13,6 +13,7 @@ public final class MainInterfaceAbstractor {
 	/**
 	 * Creates a blank {@link CanvasContainer} of default size
 	 * @return {@link CanvasContainer}
+	 * @deprecated
 	 */
 	public CanvasContainer createCanvas()
 	{

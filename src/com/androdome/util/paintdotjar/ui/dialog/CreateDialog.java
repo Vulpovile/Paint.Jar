@@ -21,11 +21,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-
 import javax.swing.border.BevelBorder;
 
-import com.androdome.util.paintdotjar.ClipboardImage;
 import com.androdome.util.paintdotjar.MainInterface;
+import com.androdome.util.paintdotjar.managers.ClipboardImage;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 import com.androdome.util.paintdotjar.ui.ColorBar;
