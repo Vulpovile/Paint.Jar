@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -41,6 +42,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	private int lastScaleMode = Image.SCALE_FAST;
 	private float scale = 1F;
 	private PluginManager pluginManager;
+	private Shape selection = null;
 	public CanvasManager manager = new CanvasManager(this);
 	public enum CanvasRenderMode {
 		NORMAL,
@@ -197,6 +199,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 			g2d.drawImage(renderableImage, x, y, (int)(width*scale), (int)(height*scale), this);
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		g2d.drawRect(x-1, y-1, (int)(width*scale)+1, (int)(height*scale)+1);
+		g2d.draw(selection);
 		if(this.pluginManager.getTool() != null)
 		{
 			this.pluginManager.getTool().onCanvasPaint(g2d, new Rectangle(x, y, (int)(width*scale), (int)(height*scale)), this.manager);
