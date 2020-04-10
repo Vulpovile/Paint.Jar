@@ -17,23 +17,27 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JComponent;
 import javax.swing.border.BevelBorder;
 
 import com.androdome.util.paintdotjar.Canvas;
+import com.androdome.util.paintdotjar.plugin.JavaPlugin;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 
 public class CanvasContainer extends JComponent implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener{
 
+	public static final int INIT_WIDTH = 800;
+	public static final int INIT_HEIGHT = 600;
 	private boolean changed = false;
 	private ArrayList<Canvas> layers = new ArrayList<Canvas>();
 	Canvas temporaryCanvas = null;
 	private File relatedFile = null;
 	private String formatname = null;
 	int tempIndex = -1;
-	int width = 800;
-	int height = 600;
+	int width = INIT_WIDTH;
+	int height = INIT_HEIGHT;
 	int xoffset = 0;
 	int yoffset = 0;
 	int selectedIndex = 0;
@@ -44,37 +48,69 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	private PluginManager pluginManager;
 	private Shape selection = null;
 	public CanvasManager manager = new CanvasManager(this);
+	private HashMap<JavaPlugin, HashMap<String, Object>> exdatamap = new HashMap<JavaPlugin, HashMap<String, Object>>();
+	
+	public void setExtra(JavaPlugin plugin, String key, Object value)
+	{
+		if(plugin == null)
+			return;
+		if(exdatamap.get(plugin) == null)
+			exdatamap.put(plugin, new HashMap<String, Object>());
+		exdatamap.get(plugin).put(key, value);
+	}
+	public Object getExtra(JavaPlugin plugin, String key)
+	{
+		if(plugin == null || exdatamap.get(plugin) == null)
+			return null;
+		return exdatamap.get(plugin).get(key);
+	}
+	
+	public Object clearExtra(JavaPlugin plugin, String key)
+	{
+		if(plugin == null || exdatamap.get(plugin) == null)
+			return null;
+		return exdatamap.get(plugin).remove(key);
+	}
+	
+	public void clearAllExtra(JavaPlugin plugin)
+	{
+		if(plugin != null)
+			exdatamap.remove(plugin);
+	}
+	public void PurgeExtra()
+	{
+		exdatamap.clear();
+	}
+	
 	public enum CanvasRenderMode {
 		NORMAL,
 		TILEDRAW
 	}
 	
 	public CanvasContainer(PluginManager mi, ColorBar color) {
+		this(INIT_WIDTH, INIT_HEIGHT, mi, color);
+	}
+	
+	private void initialConfig(PluginManager mi, ColorBar color)
+	{
 		addListeners();
-		colors = color;
 		pluginManager = mi;
-		layers.add(new Canvas(width, height));
+		colors = color;
 		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 	}
 	
 	public CanvasContainer(int width, int height, PluginManager mi, ColorBar color) {
-		addListeners();
-		pluginManager = mi;
-		colors = color;
+		initialConfig(mi, color);
 		this.width = width;
 		this.height = height;
 		layers.add(new Canvas(width, height));
-		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 	}
 	
 	public CanvasContainer(BufferedImage img, PluginManager mi, ColorBar color) {
-		addListeners();
-		pluginManager = mi;
-		colors = color;
+		initialConfig(mi, color);
 		this.width = img.getWidth();
 		this.height = img.getHeight();
 		layers.add(new Canvas(img));
-		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 	}
 	
 	public int getImageWidth()
