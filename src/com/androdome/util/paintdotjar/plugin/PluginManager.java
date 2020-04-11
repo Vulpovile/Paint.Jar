@@ -241,13 +241,13 @@ public final class PluginManager {
 				}
 				catch (Exception e)
 				{
-					//MinecraftServer.log.severe("Failed to load plugin " + pluginName+" (is it out of date?):");
+					System.out.println("Failed to load plugin " + pluginName+" (is it out of date?):");
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				catch (Error e)
 				{
-					//MinecraftServer.log.severe("Plugin " + pluginName+" crashed while attempting to load. (is it out of date?):");
+					System.out.println("Plugin " + pluginName+" crashed while attempting to load. (is it out of date?):");
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -262,6 +262,7 @@ public final class PluginManager {
 				Class<?> pluginClass;
 				pluginClass = classLoader.loadClass(mainClass.get(i));
 				JavaPlugin plugin = (JavaPlugin) pluginClass.newInstance();
+				
 				/*if(plugin.getAPIVersion() < API_VERSION)
 					System.out.println("Older API detected: "+plugin.getAPIVersion()+". Should work with no issue");
 				if(plugin.getAPIVersion() > API_VERSION)
@@ -274,13 +275,13 @@ public final class PluginManager {
 				}
 				catch (Exception e)
 				{
-					//MinecraftServer.log.severe("Failed to load plugin " + name.get(i)+" (is it out of date?):");
+					System.out.println("Failed to load plugin " + name.get(i)+" (is it out of date?):");
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				catch (Error e)
 				{
-					//MinecraftServer.log.severe("Plugin " + name.get(i)+" crashed while attempting to load. (is it out of date?):");
+					System.out.println("Plugin " + name.get(i)+" crashed while attempting to load. (is it out of date?):");
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -293,13 +294,13 @@ public final class PluginManager {
 				}
 				catch (Exception e)
 				{
-					//MinecraftServer.log.severe("Failed to load plugin " + name.get(i)+" (is it out of date?):");
+					System.out.println("Failed to load plugin " + name.get(i)+" (is it out of date?):");
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				catch (Error e)
 				{
-					//MinecraftServer.log.severe("Plugin " + name.get(i)+" crashed while attempting to load. (is it out of date?):");
+					System.out.println("Plugin " + name.get(i)+" crashed while attempting to load. (is it out of date?):");
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

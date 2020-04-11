@@ -828,7 +828,20 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 			name += "Untitled";
 		else name += currentCanvas.getRelatedFile().getName();
 		if(currentCanvas.isChanged())
+		{
 			name += "*";
+			this.btnSave.setEnabled(true);
+		}
+		else this.btnSave.setEnabled(false);
+		this.btnSaveAll.setEnabled(false);
+		for(CanvasContainer c : openCanvases)
+		{
+			if(c.isChanged())
+			{
+				this.btnSaveAll.setEnabled(true);
+				break;
+			}
+		}
 		this.setTitle(name);
 	}
 

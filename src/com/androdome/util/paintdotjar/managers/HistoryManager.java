@@ -32,5 +32,6 @@ public class HistoryManager {
 		{
 			historyList.remove(0);
 		}	
+		canvasContainer.setChanged(true);
 	}
 }
