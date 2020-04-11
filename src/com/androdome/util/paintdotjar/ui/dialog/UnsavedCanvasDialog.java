@@ -3,6 +3,7 @@ package com.androdome.util.paintdotjar.ui.dialog;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -13,8 +14,10 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
 import com.androdome.util.paintdotjar.MainInterfaceAbstractor;
+import com.androdome.util.paintdotjar.managers.ImageManager;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 import com.androdome.util.paintdotjar.ui.ContainerButton;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -66,6 +69,8 @@ public class UnsavedCanvasDialog extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("Save All");
+				okButton.setIcon(ImageManager.getScaledImageIconResource("ico/file/saveall.png", 16, 16, Image.SCALE_SMOOTH));
+				okButton.setMnemonic('S');
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						for(CanvasContainer c : canvasContainer)
@@ -90,6 +95,8 @@ public class UnsavedCanvasDialog extends JDialog {
 			}
 			
 			JButton btnDiscardAll = new JButton("Discard All");
+			btnDiscardAll.setIcon(ImageManager.getScaledImageIconResource("ico/file/delete2.png", 16, 16, Image.SCALE_SMOOTH));
+			btnDiscardAll.setMnemonic('D');
 			btnDiscardAll.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					canDispose = true;
@@ -100,6 +107,8 @@ public class UnsavedCanvasDialog extends JDialog {
 			buttonPane.add(btnDiscardAll);
 			{
 				JButton cancelButton = new JButton("Cancel");
+				cancelButton.setIcon(null);
+				cancelButton.setMnemonic('C');
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						dispose();

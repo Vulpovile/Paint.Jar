@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.KeyboardFocusManager;
-
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -65,6 +63,8 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.BoxLayout;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.KeyStroke;
+import java.awt.event.InputEvent;
 
 public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener {
 
@@ -77,6 +77,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	private JMenuItem mntmOpen = new JMenuItem("Open");
 	private JMenuItem mntmNew = new JMenuItem("New");
 	private JMenuItem mntmSave = new JMenuItem("Save");
+	private JMenuItem mntmSaveAll = new JMenuItem("Save All");
 	private JMenuItem mntmS2CB = new JMenuItem("Save to clipboard");
 	private JMenuItem mntmLAF = new JMenuItem("Looks And Feels");
 	private JMenuItem mntmStandard = new JMenuItem("Standard");
@@ -252,15 +253,28 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		JMenu mnFile = new JMenu("File");
 		mnFile.setMnemonic('F');
 		menuBar.add(mnFile);
+		mntmOpen.setIcon(ImageManager.getScaledImageIconResource("ico/file/open.png", 16, 16, Image.SCALE_SMOOTH));
+		mntmOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
 		
 		
 		mnFile.add(mntmOpen);
+		mntmNew.setIcon(ImageManager.getScaledImageIconResource("ico/file/new.png", 16, 16, Image.SCALE_SMOOTH));
+		mntmNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
 		
 		mnFile.add(mntmNew);
+		mntmSave.setIcon(ImageManager.getScaledImageIconResource("ico/file/save.png", 16, 16, Image.SCALE_SMOOTH));
+		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 
 		mnFile.add(mntmSave);
+		mntmSaveAs.setIcon(ImageManager.getScaledImageIconResource("ico/file/save.png", 16, 16, Image.SCALE_SMOOTH));
+		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		
 		mnFile.add(mntmSaveAs);
+		mntmSaveAll.setIcon(ImageManager.getScaledImageIconResource("ico/file/saveall.png", 16, 16, Image.SCALE_SMOOTH));
+		mntmSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
+		
+		mnFile.add(mntmSaveAll);
+		mntmAbout.setIcon(ImageManager.getScaledImageIconResource("ico/layers/unknown.png", 16, 16, Image.SCALE_SMOOTH));
 		
 		mnFile.add(mntmAbout);
 		
@@ -270,8 +284,10 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		
 		JMenu mnCanvasDispaly = new JMenu("Canvas Dispaly");
 		mnView.add(mnCanvasDispaly);
+		mntmStandard.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
 		
 		mnCanvasDispaly.add(mntmStandard);
+		mntmTiledraw.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
 		
 		mnCanvasDispaly.add(mntmTiledraw);
 		mntmTestDialog.addActionListener(new ActionListener() {
@@ -394,12 +410,13 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		mntmStandard.addActionListener(this);
 		mntmTiledraw.addActionListener(this);
 		mntmAbout.addActionListener(this);
+		mntmSaveAll.addActionListener(this);
 		btnNew.addActionListener(this);
 		btnSave.addActionListener(this);
 		btnOpen.addActionListener(this);
 		btnSaveAll.addActionListener(this);
 		this.addWindowListener(this);
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyboardShortcutListener(this));
+		//KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyboardShortcutListener(this));
 	}
 
 	public void requestClose(CanvasContainer canvas) {

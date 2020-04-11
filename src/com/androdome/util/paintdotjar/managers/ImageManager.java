@@ -40,6 +40,15 @@ public class ImageManager {
 			return null;
 		return new ImageIcon(img);
 	}
+	public static ImageIcon getScaledImageIconResource(String resource, int w, int h, int mode)
+	{
+		if(mode == -1)
+			mode = Image.SCALE_DEFAULT;
+		Image img = getImageResource(resource);
+		if(img == null)
+			return null;
+		return new ImageIcon(img.getScaledInstance(w, h, mode));
+	}
 	public static Image dropImageResource(String resource)
 	{
 		return __StaticImageMap.remove(resource);

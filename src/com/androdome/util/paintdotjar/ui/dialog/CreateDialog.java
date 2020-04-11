@@ -25,9 +25,11 @@ import javax.swing.border.BevelBorder;
 
 import com.androdome.util.paintdotjar.MainInterface;
 import com.androdome.util.paintdotjar.managers.ClipboardImage;
+import com.androdome.util.paintdotjar.managers.ImageManager;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 import com.androdome.util.paintdotjar.ui.ColorBar;
+import java.awt.FlowLayout;
 
 public class CreateDialog extends JDialog {
 
@@ -78,67 +80,6 @@ public class CreateDialog extends JDialog {
 		contentPane.add(txtY);
 		txtY.setColumns(10);
 		final JCheckBox chckbxFromClipboard = new JCheckBox("Create from clipboard");
-		JButton btnOk = new JButton("Ok");
-		btnOk.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CanvasContainer cc;
-				try{
-					int x = Integer.parseInt(txtX.getText().trim());
-					int y = Integer.parseInt(txtY.getText().trim());
-					
-					if(x > 1 || y > 1)
-					{
-						cc = new CanvasContainer(x, y, manager, colorPanel);
-						if(chckbxFromClipboard.isSelected())
-						{
-							cc.manager.getSelectedCanvas().getGraphics().drawImage(image, 0, 0, null);
-						}
-						else if(!comboBox.getSelectedItem().toString().toLowerCase().trim().equals("transparent"))
-						{
-							Graphics g = cc.manager.getSelectedCanvas().getGraphics();
-							String comboValue = comboBox.getSelectedItem().toString().toLowerCase().trim();
-							if(comboValue.equals("black"))
-								g.setColor(Color.BLACK);
-							else if(comboValue.equals("white"))
-								g.setColor(Color.WHITE);
-							else if(comboValue.equals("from primary"))
-								g.setColor(colorPanel.getPrimary());
-							else if(comboValue.equals("from secondary"))
-								g.setColor(colorPanel.getSecondary());
-							else g.setColor(new Color(0,0,0,0));
-							g.fillRect(0, 0, cc.manager.getImage().getWidth(), cc.manager.getImage().getHeight());
-						}
-						mainInterface.addOpenCanvas(cc, true);
-						dispose();
-					}
-					else
-					{
-						JOptionPane.showMessageDialog(null, "Your size has to be greater than 0!", "Error", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-				catch(NumberFormatException ex)
-				{
-					JOptionPane.showMessageDialog(null, "You can only use integer numbers!", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				catch(OutOfMemoryError ex)
-				{
-					cc = null;
-					System.gc();
-					JOptionPane.showMessageDialog(null, "You do not have enough memory availible for this operation!", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
-		btnOk.setBounds(277, 211, 100, 27);
-		contentPane.add(btnOk);
-		
-		JButton btnFuckNo = new JButton("Cancel");
-		btnFuckNo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				dispose();
-			}
-		});
-		btnFuckNo.setBounds(165, 211, 100, 27);
-		contentPane.add(btnFuckNo);
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "From Clipboard", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -198,6 +139,75 @@ public class CreateDialog extends JDialog {
 		JLabel lblBackground = new JLabel("Background");
 		lblBackground.setBounds(212, 13, 100, 15);
 		contentPane.add(lblBackground);
+		
+		JPanel panel_1 = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		panel_1.setBounds(0, 202, 383, 42);
+		contentPane.add(panel_1);
+		
+		JButton btnFuckNo = new JButton("Cancel");
+		panel_1.add(btnFuckNo);
+		btnFuckNo.setIcon(ImageManager.getScaledImageIconResource("ico/file/delete2.png", 16, 16, Image.SCALE_SMOOTH));
+		btnFuckNo.setMnemonic('C');
+		btnFuckNo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+			}
+		});
+		JButton btnOk = new JButton("Ok");
+		panel_1.add(btnOk);
+		btnOk.setMnemonic('O');
+		btnOk.setIcon(ImageManager.getScaledImageIconResource("ico/file/new.png", 16, 16, Image.SCALE_SMOOTH));
+		btnOk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CanvasContainer cc;
+				try{
+					int x = Integer.parseInt(txtX.getText().trim());
+					int y = Integer.parseInt(txtY.getText().trim());
+					
+					if(x > 1 || y > 1)
+					{
+						cc = new CanvasContainer(x, y, manager, colorPanel);
+						if(chckbxFromClipboard.isSelected())
+						{
+							cc.manager.getSelectedCanvas().getGraphics().drawImage(image, 0, 0, null);
+						}
+						else if(!comboBox.getSelectedItem().toString().toLowerCase().trim().equals("transparent"))
+						{
+							Graphics g = cc.manager.getSelectedCanvas().getGraphics();
+							String comboValue = comboBox.getSelectedItem().toString().toLowerCase().trim();
+							if(comboValue.equals("black"))
+								g.setColor(Color.BLACK);
+							else if(comboValue.equals("white"))
+								g.setColor(Color.WHITE);
+							else if(comboValue.equals("from primary"))
+								g.setColor(colorPanel.getPrimary());
+							else if(comboValue.equals("from secondary"))
+								g.setColor(colorPanel.getSecondary());
+							else g.setColor(new Color(0,0,0,0));
+							g.fillRect(0, 0, cc.manager.getImage().getWidth(), cc.manager.getImage().getHeight());
+						}
+						mainInterface.addOpenCanvas(cc, true);
+						dispose();
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(null, "Your size has to be greater than 0!", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				catch(NumberFormatException ex)
+				{
+					JOptionPane.showMessageDialog(null, "You can only use integer numbers!", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				catch(OutOfMemoryError ex)
+				{
+					cc = null;
+					System.gc();
+					JOptionPane.showMessageDialog(null, "You do not have enough memory availible for this operation!", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
 		
 		
 	}
