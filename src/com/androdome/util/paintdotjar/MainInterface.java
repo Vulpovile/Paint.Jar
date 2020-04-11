@@ -284,10 +284,10 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		
 		JMenu mnCanvasDispaly = new JMenu("Canvas Dispaly");
 		mnView.add(mnCanvasDispaly);
-		mntmStandard.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
+		//mntmStandard.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
 		
 		mnCanvasDispaly.add(mntmStandard);
-		mntmTiledraw.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
+		//mntmTiledraw.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
 		
 		mnCanvasDispaly.add(mntmTiledraw);
 		mntmTestDialog.addActionListener(new ActionListener() {
