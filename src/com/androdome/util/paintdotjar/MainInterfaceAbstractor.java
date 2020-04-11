@@ -47,4 +47,9 @@ public final class MainInterfaceAbstractor {
 	{
 		return mf.saveNoDialog(cc);
 	}
+	public void showOpenDialog() {
+		CanvasContainer cc = mf.showOpenDialog();
+		if(cc != null)
+			mf.addOpenCanvas(cc, true);
+	}
 }

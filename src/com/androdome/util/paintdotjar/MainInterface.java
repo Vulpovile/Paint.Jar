@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.KeyboardFocusManager;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -101,6 +102,11 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	private final static int maxOn = 3200;
 	private final static int maxOff = 800;
 	private final JMenuItem mntmTestDialog = new JMenuItem("Test Dialog");
+	private final JButton btnNew = new JButton("");
+	private final JButton btnOpen = new JButton("");
+	private final JButton btnSave = new JButton("");
+	private final JButton btnSaveAll = new JButton("");
+	
 	/**
 	 * Launch the application.
 	 */
@@ -214,9 +220,11 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	
 	private MainInterface() {
 		//addOpenCanvas(currentCanvas, true);
+		
 		ArrayList<Image> icons = new ArrayList<Image>();
 		icons.add(ImageManager.getImageResource("ico/PaintJar32.png"));
 		icons.add(ImageManager.getImageResource("ico/PaintJar64.png"));
+		icons.add(ImageManager.getImageResource("ico/PaintJar128.png"));
 		PaintUtils.setAppIcons(this, icons);
 		setTitle("Paint.jar");
 		manager.loadPlugins();
@@ -242,6 +250,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		toolPanel.add(menuBar);
 		
 		JMenu mnFile = new JMenu("File");
+		mnFile.setMnemonic('F');
 		menuBar.add(mnFile);
 		
 		
@@ -256,6 +265,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		mnFile.add(mntmAbout);
 		
 		JMenu mnView = new JMenu("View");
+		mnView.setMnemonic('V');
 		menuBar.add(mnView);
 		
 		JMenu mnCanvasDispaly = new JMenu("Canvas Dispaly");
@@ -273,21 +283,44 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		mnView.add(mntmTestDialog);
 		
 		JMenu mnEdit = new JMenu("Edit");
+		mnEdit.setMnemonic('E');
 		menuBar.add(mnEdit);
 		
 		mnEdit.add(mntmS2CB);
 		
 		JMenu mnSettings = new JMenu("Settings");
+		mnSettings.setMnemonic('E');
 		menuBar.add(mnSettings);
 		
 		
 		mnSettings.add(mntmLAF);
 		
 		JMenu mnPlugins = new JMenu("Plugins");
+		mnPlugins.setMnemonic('P');
 		menuBar.add(mnPlugins);
 		
 		JToolBar toolBarGeneral = new JToolBar();
 		toolPanel.add(toolBarGeneral);
+		btnNew.setToolTipText("New");
+		btnNew.setIcon(ImageManager.getImageIconResource("ico/file/new.png"));
+		btnNew.setMnemonic('N');
+		
+		toolBarGeneral.add(btnNew);
+		btnOpen.setToolTipText("Open");
+		btnOpen.setIcon(ImageManager.getImageIconResource("ico/file/open.png"));
+		btnOpen.setMnemonic('O');
+		
+		toolBarGeneral.add(btnOpen);
+		btnSave.setToolTipText("Save");
+		btnSave.setIcon(ImageManager.getImageIconResource("ico/file/save.png"));
+		btnSave.setMnemonic('S');
+		
+		toolBarGeneral.add(btnSave);
+		btnSaveAll.setToolTipText("Save All");
+		btnSaveAll.setIcon(ImageManager.getImageIconResource("ico/file/saveall.png"));
+		btnSaveAll.setMnemonic('A');
+		
+		toolBarGeneral.add(btnSaveAll);
 		
 		toolPanel.add(toolBarPlugin);
 
@@ -361,7 +394,12 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		mntmStandard.addActionListener(this);
 		mntmTiledraw.addActionListener(this);
 		mntmAbout.addActionListener(this);
+		btnNew.addActionListener(this);
+		btnSave.addActionListener(this);
+		btnOpen.addActionListener(this);
+		btnSaveAll.addActionListener(this);
 		this.addWindowListener(this);
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyboardShortcutListener(this));
 	}
 
 	public void requestClose(CanvasContainer canvas) {
@@ -431,47 +469,34 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == mntmOpen)
+		if(e.getSource() == mntmOpen || e.getSource() == btnOpen)
 		{
-			JFileChooser chooser = createChooser(true);
-			chooser.setMultiSelectionEnabled(true);
-			if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
-			{
-				PropertyManager.setProperty("last-dir", chooser.getCurrentDirectory().getAbsolutePath());
-				for(File f : chooser.getSelectedFiles())
-				{
-					String extension = "";
-					if (f.getName().contains("."))
-					     extension = f.getName().substring(f.getName().lastIndexOf(".")+1).trim().toLowerCase();
-					FileFormatManager ffm = PaintUtils.registeredHandlers.get(extension);
-					if(ffm == null)
-						ffm = PaintUtils.FALLBACK;
-					CanvasContainer cc = ffm.loadCanvas(f, this.abstractor);
-					if(cc != null)
-					{
-						cc.setRelatedFile(f);
-						cc.setFormatName(extension);
-						addOpenCanvas(cc, true);
-					}
-					else if(!ffm.doesDisplayError())
-					{
-						JOptionPane.showMessageDialog(null, "The file is could not load!", "Error", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-			}
+			CanvasContainer cc = showOpenDialog();
+			if(cc != null)
+				addOpenCanvas(cc, true);
 		}
-		else if(e.getSource() == mntmNew)
+		else if(e.getSource() == mntmNew || e.getSource() == btnNew)
 		{
 			CreateDialog dlog = new CreateDialog(this, colorPanel, manager);
 			dlog.setModal(true);
 			dlog.setVisible(true);
 		}
-		else if(e.getSource() == mntmSave)
+		else if(e.getSource() == mntmSave || e.getSource() == btnSave)
 		{
 			if(currentCanvas.getRelatedFile() == null)
 				showSaveDialog(currentCanvas);
 			else 
 				saveNoDialog(currentCanvas);
+		}
+		else if(e.getSource() == btnSaveAll)
+		{
+			for(CanvasContainer cc : openCanvases)
+			{
+				if(cc.getRelatedFile() == null)
+					showSaveDialog(cc);
+				else 
+					saveNoDialog(cc);
+			}
 		}
 		else if(e.getSource() == mntmSaveAs)
 		{
@@ -531,6 +556,37 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		return chooser;
 	}
 
+	CanvasContainer showOpenDialog()
+	{
+		JFileChooser chooser = createChooser(true);
+		chooser.setMultiSelectionEnabled(true);
+		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+		{
+			PropertyManager.setProperty("last-dir", chooser.getCurrentDirectory().getAbsolutePath());
+			for(File f : chooser.getSelectedFiles())
+			{
+				String extension = "";
+				if (f.getName().contains("."))
+				     extension = f.getName().substring(f.getName().lastIndexOf(".")+1).trim().toLowerCase();
+				FileFormatManager ffm = PaintUtils.registeredHandlers.get(extension);
+				if(ffm == null)
+					ffm = PaintUtils.FALLBACK;
+				CanvasContainer cc = ffm.loadCanvas(f, this.abstractor);
+				if(cc != null)
+				{
+					cc.setRelatedFile(f);
+					cc.setFormatName(extension);
+					return cc;
+				}
+				else if(!ffm.doesDisplayError())
+				{
+					JOptionPane.showMessageDialog(null, "The file is could not load!", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}
+		return null;
+	}
+	
 	boolean showSaveDialog(CanvasContainer cc) {
 		JFileChooser chooser = createChooser(false);
 		chooser.setSelectedFile(cc.getRelatedFile());
@@ -565,8 +621,10 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		return false;
 	}
 	boolean saveNoDialog(CanvasContainer cc) {
-		FileFormatManager ffm = PaintUtils.registeredHandlers.get(cc.getFormatName().trim().toLowerCase());
-		if(ffm == null)
+		FileFormatManager ffm = null;
+		if(cc.getFormatName() != null)
+			ffm = PaintUtils.registeredHandlers.get(cc.getFormatName().trim().toLowerCase());
+		if(ffm == null || cc.getRelatedFile() == null)
 		{
 			return showSaveDialog(cc);
 		}
@@ -822,5 +880,9 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	public void windowDeactivated(WindowEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public MainInterfaceAbstractor getAbstractor() {
+		return abstractor;
 	}
 }

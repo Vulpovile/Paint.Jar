@@ -17,7 +17,9 @@ import javax.swing.JTextPane;
 import javax.swing.JList;
 
 import com.androdome.util.paintdotjar.MainInterface;
+import com.androdome.util.paintdotjar.managers.ImageManager;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
+
 import javax.swing.SwingConstants;
 
 public class AboutDialog extends JDialog {
@@ -35,42 +37,42 @@ public class AboutDialog extends JDialog {
 		setModal(true);
 		setResizable(false);
 		setTitle("About");
-		setBounds(100, 100, 417, 500);
+		setBounds(100, 100, 456, 500);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 		{
 			JLabel lblPaintjarBuild = new JLabel("Paint.jar Build "+MainInterface.BUILD+" (Plugin API "+PluginManager.API_VERSION+"), Copyright 2020");
-			lblPaintjarBuild.setBounds(10, 11, 391, 14);
+			lblPaintjarBuild.setBounds(92, 11, 348, 14);
 			contentPanel.add(lblPaintjarBuild);
 		}
 		{
 			JLabel lblCredits = new JLabel("Credits");
-			lblCredits.setBounds(10, 86, 46, 14);
+			lblCredits.setBounds(10, 97, 46, 14);
 			contentPanel.add(lblCredits);
 		}
 		{
 			JLabel lblInstalledPlugins = new JLabel("Installed Plugins");
-			lblInstalledPlugins.setBounds(212, 86, 163, 14);
+			lblInstalledPlugins.setBounds(230, 97, 163, 14);
 			contentPanel.add(lblInstalledPlugins);
 		}
 		{
 			JLabel lblpaintjarIsA = new JLabel("<html>Paint.jar is a free, open-source paint program inteded to be a cross-platform, easy to use, yet powerful paint application. If you have anything to contribute, feel free to visit the <a href=\"https://github.com/Vulpovile/Paint.Jar\">Github Page</a></html>");
-			lblpaintjarIsA.setBounds(10, 29, 391, 46);
+			lblpaintjarIsA.setBounds(92, 29, 348, 57);
 			contentPanel.add(lblpaintjarIsA);
 		}
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 111, 189, 262);
+		scrollPane.setBounds(10, 122, 210, 262);
 		contentPanel.add(scrollPane);
 		
 		JTextPane txtpnProgrammingVulopvileStack = new JTextPane();
 		txtpnProgrammingVulopvileStack.setEditable(false);
-		txtpnProgrammingVulopvileStack.setText("Programming:\r\nVulopvile\r\n\r\nTesting:\r\nidonob\r\nNukley\r\n\r\nStack Overflow solutions used:\r\nhttps://stackoverflow.com/questions/7834768\r\nhttps://stackoverflow.com/questions/320542");
+		txtpnProgrammingVulopvileStack.setText("Programming:\r\nVulopvile\r\n\r\nTesting:\r\nidonob\r\nNukley\r\n\r\nStack Overflow solutions used:\r\n7834768\r\n320542");
 		scrollPane.setViewportView(txtpnProgrammingVulopvileStack);
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(212, 111, 189, 262);
+		scrollPane_1.setBounds(230, 122, 210, 262);
 		contentPanel.add(scrollPane_1);
 		
 		JList list = new JList();
@@ -78,13 +80,19 @@ public class AboutDialog extends JDialog {
 		scrollPane_1.setViewportView(list);
 		
 		JLabel lblPluginDirectory = new JLabel("Plugin Directory:");
-		lblPluginDirectory.setBounds(10, 384, 391, 14);
+		lblPluginDirectory.setBounds(10, 395, 391, 14);
 		contentPanel.add(lblPluginDirectory);
 		
 		JLabel label = new JLabel("<html>"+manager.getPluginDirectory()+"</html>");
 		label.setVerticalAlignment(SwingConstants.TOP);
-		label.setBounds(10, 398, 391, 30);
+		label.setBounds(10, 409, 391, 30);
 		contentPanel.add(label);
+		
+		JLabel lblIcon = new JLabel("");
+		lblIcon.setHorizontalAlignment(SwingConstants.CENTER);
+		lblIcon.setIcon(ImageManager.getImageIconResource("ico/PaintJar64.png"));
+		lblIcon.setBounds(10, 11, 72, 72);
+		contentPanel.add(lblIcon);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));

@@ -262,6 +262,11 @@ public final class PluginManager {
 				Class<?> pluginClass;
 				pluginClass = classLoader.loadClass(mainClass.get(i));
 				JavaPlugin plugin = (JavaPlugin) pluginClass.newInstance();
+				/*if(plugin.getAPIVersion() < API_VERSION)
+					System.out.println("Older API detected: "+plugin.getAPIVersion()+". Should work with no issue");
+				if(plugin.getAPIVersion() > API_VERSION)
+					System.out.println("Newer API detected: "+plugin.getAPIVersion()+". An error is likely to occur. You may need to update your program!");
+				*/
 				plugin.pluginManager = this;
 				this.plugins.put(name.get(i), plugin);
 				this.names.put(plugin, name.get(i));
