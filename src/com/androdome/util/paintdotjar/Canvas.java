@@ -25,6 +25,8 @@ public class Canvas{
 	
 	public static byte[] serialize(Canvas canvas) throws IOException
 	{
+		if(canvas == null)
+			return null;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		GZIPOutputStream gz = new GZIPOutputStream(bos);
 		DataOutputStream dos = new DataOutputStream(gz);
@@ -39,6 +41,8 @@ public class Canvas{
 	
 	public static Canvas unserialize(byte[] serialized) throws IOException
 	{
+		if(serialized == null)
+			return null;
 		ByteArrayInputStream bis = new ByteArrayInputStream(serialized);
 		GZIPInputStream gz = new GZIPInputStream(bis);
 		DataInputStream dis = new DataInputStream(gz);

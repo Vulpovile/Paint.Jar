@@ -44,6 +44,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
 import com.androdome.util.paintdotjar.managers.ClipboardImage;
+import com.androdome.util.paintdotjar.managers.ImageManager;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 import com.androdome.util.paintdotjar.plugin.RegisteredTool;
 import com.androdome.util.paintdotjar.prop.PropertyManager;
@@ -210,8 +211,13 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	/**
 	 * Create the frame.
 	 */
+	
 	private MainInterface() {
 		//addOpenCanvas(currentCanvas, true);
+		ArrayList<Image> icons = new ArrayList<Image>();
+		icons.add(ImageManager.getImageResource("ico/PaintJar32.png"));
+		icons.add(ImageManager.getImageResource("ico/PaintJar64.png"));
+		PaintUtils.setAppIcons(this, icons);
 		setTitle("Paint.jar");
 		manager.loadPlugins();
 		PaintUtils.setDefault();

@@ -1,9 +1,14 @@
 package com.androdome.util.paintdotjar.util;
 
+import java.awt.Image;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.Comparator;
+import java.util.List;
 import java.util.TreeMap;
+
+import javax.swing.JFrame;
 
 import com.androdome.util.paintdotjar.MainInterfaceAbstractor;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
@@ -85,5 +90,17 @@ public class PaintUtils {
 			}
 			
 		};
+	}
+	public static void setAppIcons(JFrame frame, List<Image> images) {
+
+	    try {
+	        Class<?> [] types = {java.util.List.class};
+	        Method method = Class.forName("java.awt.Window").getDeclaredMethod("setIconImages", types);
+
+	        Object [] parameters = {images};
+	        method.invoke(frame, parameters);
+	    } catch (Exception e) {
+	        frame.setIconImage(images.get(0));
+	    }       
 	}
 }
