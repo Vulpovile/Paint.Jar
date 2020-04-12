@@ -1,12 +1,14 @@
 package com.androdome.util.paintdotjar.ui;
 
 import java.awt.Container;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 
-public class DetatchablePanel extends JPanel {
+public class DetatchablePanel extends JPanel implements WindowListener {
 	/**
 	 * 
 	 */
@@ -19,6 +21,7 @@ public class DetatchablePanel extends JPanel {
 		{
 			parentComponent = this.getParent();
 			containerFrame = new JFrame(this.getName());
+			containerFrame.addWindowListener(this);
 			this.setPreferredSize(this.getSize());
 			containerFrame.setLocationRelativeTo(this);
 			parentComponent.remove(this);
@@ -34,6 +37,7 @@ public class DetatchablePanel extends JPanel {
 			containerFrame.remove(this);
 			containerFrame.dispose();
 			containerFrame = null;
+			
 		}
 		if(parentComponent != null)
 		{
@@ -41,5 +45,38 @@ public class DetatchablePanel extends JPanel {
 			parentComponent.validate();
 			parentComponent.repaint();
 		}
+	}
+	
+	public boolean isAttatched()
+	{
+		return containerFrame == null;
+	}
+	
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void windowClosing(WindowEvent e) {
+		attatch();
+	}
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
