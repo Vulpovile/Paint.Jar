@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -32,6 +33,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -49,7 +52,9 @@ import com.androdome.util.paintdotjar.plugin.RegisteredTool;
 import com.androdome.util.paintdotjar.prop.PropertyManager;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 import com.androdome.util.paintdotjar.ui.ColorBar;
+import com.androdome.util.paintdotjar.ui.ComponentList;
 import com.androdome.util.paintdotjar.ui.ContainerToggleButton;
+import com.androdome.util.paintdotjar.ui.LayerInformationPanel;
 import com.androdome.util.paintdotjar.ui.dialog.AboutDialog;
 import com.androdome.util.paintdotjar.ui.dialog.CrashDialog;
 import com.androdome.util.paintdotjar.ui.dialog.CreateDialog;
@@ -64,7 +69,10 @@ import javax.swing.JScrollPane;
 import javax.swing.BoxLayout;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.KeyStroke;
+
 import java.awt.event.InputEvent;
+
+import javax.swing.JLabel;
 
 public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener {
 
@@ -107,6 +115,10 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	private final JButton btnOpen = new JButton("");
 	private final JButton btnSave = new JButton("");
 	private final JButton btnSaveAll = new JButton("");
+	private final JPanel panelRight = new JPanel();
+	private final JLabel lblLayers = new JLabel("Layers");
+	private final JScrollPane scrollPane_1 = new JScrollPane();
+	private final ComponentList layerList = new ComponentList();
 	
 	/**
 	 * Launch the application.
@@ -397,6 +409,16 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		
 		rightSidePanel.add(btnHidePanel, BorderLayout.WEST);
 		btnHidePanel.setPreferredSize(new Dimension(10,-1));
+		
+		rightSidePanel.add(panelRight, BorderLayout.EAST);
+		panelRight.setLayout(new BorderLayout(0, 0));
+		
+		panelRight.add(lblLayers, BorderLayout.NORTH);
+		
+		panelRight.add(scrollPane_1, BorderLayout.CENTER);
+		
+		scrollPane_1.setViewportView(layerList);
+		
 		chckbxTickMultiples.addChangeListener(this);
 		sliderScale.addChangeListener(this);
 		//Listeners
@@ -819,7 +841,18 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 			contentPane.revalidate();
 			contentPane.repaint();
 			setName();
+			refillLayers();
 		}
+	}
+
+	private void refillLayers() {
+		ArrayList<Component> lip = new ArrayList<Component>();
+		for(Canvas c : currentCanvas.getLayers())
+		{
+			lip.add(new LayerInformationPanel());
+		}
+		Collections.reverse(lip);
+		this.layerList.setListData(lip);
 	}
 
 	public void setName() {
