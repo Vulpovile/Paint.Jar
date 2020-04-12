@@ -54,6 +54,7 @@ import com.androdome.util.paintdotjar.ui.CanvasContainer;
 import com.androdome.util.paintdotjar.ui.ColorBar;
 import com.androdome.util.paintdotjar.ui.ComponentList;
 import com.androdome.util.paintdotjar.ui.ContainerToggleButton;
+import com.androdome.util.paintdotjar.ui.DetatchablePanel;
 import com.androdome.util.paintdotjar.ui.LayerInformationPanel;
 import com.androdome.util.paintdotjar.ui.dialog.AboutDialog;
 import com.androdome.util.paintdotjar.ui.dialog.CrashDialog;
@@ -73,6 +74,7 @@ import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
 
 import javax.swing.JLabel;
+import javax.swing.border.EmptyBorder;
 
 public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener {
 
@@ -117,8 +119,9 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	private final JButton btnSaveAll = new JButton("");
 	private final JPanel panelRight = new JPanel();
 	private final JLabel lblLayers = new JLabel("Layers");
-	private final JScrollPane scrollPane_1 = new JScrollPane();
-	private final ComponentList layerList = new ComponentList();
+	private final JPanel panel_3 = new JPanel();
+	private final JPanel panel_4 = new DetatchablePanel();
+	private final JLabel lblThisIsA = new JLabel("This is a test of a detatchable panel");
 	
 	/**
 	 * Launch the application.
@@ -414,10 +417,14 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		panelRight.setLayout(new BorderLayout(0, 0));
 		
 		panelRight.add(lblLayers, BorderLayout.NORTH);
+		panel_3.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
-		panelRight.add(scrollPane_1, BorderLayout.CENTER);
+		panelRight.add(panel_3, BorderLayout.CENTER);
+		panel_3.setLayout(new BorderLayout(0, 0));
 		
-		scrollPane_1.setViewportView(layerList);
+		panel_3.add(panel_4, BorderLayout.CENTER);
+		
+		panel_4.add(lblThisIsA);
 		
 		chckbxTickMultiples.addChangeListener(this);
 		sliderScale.addChangeListener(this);
@@ -852,7 +859,8 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 			lip.add(new LayerInformationPanel());
 		}
 		Collections.reverse(lip);
-		this.layerList.setListData(lip);
+		//TODO add layer list
+		//this.layerList.setListData(lip);
 	}
 
 	public void setName() {
@@ -890,7 +898,6 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	}
 
 	public void windowOpened(WindowEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -899,7 +906,6 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		try {
 			PropertyManager.saveProperties();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		ArrayList<CanvasContainer> unsaved = new ArrayList<CanvasContainer>();
@@ -921,27 +927,22 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	}
 
 	public void windowClosed(WindowEvent e) {
-		// TODO Auto-generated method stub
 		System.exit(0);
 	}
 
 	public void windowIconified(WindowEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void windowDeiconified(WindowEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void windowActivated(WindowEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void windowDeactivated(WindowEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 

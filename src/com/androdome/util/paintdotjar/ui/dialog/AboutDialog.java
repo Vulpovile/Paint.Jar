@@ -69,7 +69,7 @@ public class AboutDialog extends JDialog {
 		
 		JTextPane txtpnProgrammingVulopvileStack = new JTextPane();
 		txtpnProgrammingVulopvileStack.setEditable(false);
-		txtpnProgrammingVulopvileStack.setText("Programming:\r\nVulopvile\r\n\r\nTesting:\r\nidonob\r\nNukley\r\n\r\nStack Overflow solutions used:\r\n7834768\r\n320542");
+		txtpnProgrammingVulopvileStack.setText("Programming:\r\nVulopvile\r\n\r\nTesting:\r\nidonob\r\nNukley\r\n\r\nStack Overflow solutions used:\r\n7834768\r\n320542\r\n10773713");
 		scrollPane.setViewportView(txtpnProgrammingVulopvileStack);
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(230, 122, 210, 262);
