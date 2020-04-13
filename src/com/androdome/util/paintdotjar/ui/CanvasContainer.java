@@ -58,6 +58,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	
 	private void initialConfig(PluginManager mi, ColorBar color)
 	{
+		this.setDoubleBuffered(false);
 		addListeners();
 		pluginManager = mi;
 		colors = color;
@@ -65,6 +66,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	}
 	
 	public CanvasContainer(int width, int height, PluginManager mi, ColorBar color) {
+
 		initialConfig(mi, color);
 		this.width = width;
 		this.height = height;
