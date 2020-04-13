@@ -1,14 +1,13 @@
 package com.androdome.util.paintdotjar.plugin;
 
 import java.awt.Image;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Properties;
 
 import javax.swing.JToolBar;
 
@@ -231,10 +230,11 @@ public final class PluginManager {
 					if(jars[i].getName().endsWith(".jar"))
 					{
 						URLClassLoader classLoader = new URLClassLoader(new URL[]{jars[i].toURI().toURL()});
-						BufferedReader reader = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("pluginfo.cfg")));
-						pluginName = reader.readLine();
-						String mainClassStr = reader.readLine();
-						reader.close();
+						Properties prop = new Properties();
+						prop.load(classLoader.getResourceAsStream("pluginfo.cfg"));
+						pluginName = prop.getProperty("plugin-name");
+						String mainClassStr = prop.getProperty("main-class");
+						prop = null;
 						urls.add(jars[i].toURI().toURL());
 						mainClass.add(mainClassStr);
 						name.add(pluginName);

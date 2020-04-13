@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 
-import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
@@ -81,7 +80,6 @@ import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JSplitPane;
 import javax.swing.JList;
-import javax.swing.Icon;
 
 public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener, ListSelectionListener {
 
