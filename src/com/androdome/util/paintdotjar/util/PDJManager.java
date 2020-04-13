@@ -143,7 +143,6 @@ public final class PDJManager extends FileFormatManager {
 			ZipEntry e = new ZipEntry("basemeta.mta");
 			out.putNextEntry(e);
 			Properties prop = new Properties();
-			out.write("PDJ METADATA TYPE 1\r\n".getBytes());
 			prop.setProperty("meta-type", String.valueOf(META_TYPE));
 			prop.setProperty("width", String.valueOf(cc.getImageWidth()));
 			prop.setProperty("height",  String.valueOf(cc.getImageHeight()));
