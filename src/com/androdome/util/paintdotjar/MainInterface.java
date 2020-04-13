@@ -49,6 +49,7 @@ import javax.swing.JTextField;
 
 import com.androdome.util.paintdotjar.managers.ClipboardImage;
 import com.androdome.util.paintdotjar.managers.HistoryEntry;
+import com.androdome.util.paintdotjar.managers.HistoryManager.Operations;
 import com.androdome.util.paintdotjar.managers.ImageManager;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 import com.androdome.util.paintdotjar.plugin.RegisteredTool;
@@ -551,6 +552,8 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		btnSaveAll.addActionListener(this);
 		layerList.addListSelectionListener(this);
 		btnNewLayer.addActionListener(this);
+		btnDeleteLayer.addActionListener(this);
+		btnCloneLayer.addActionListener(this);
 		this.addWindowListener(this);
 		//KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyboardShortcutListener(this));
 	}
@@ -691,6 +694,52 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 			refillLayers();
 			this.layerList.validate();
 			this.layerList.repaint();
+			try
+			{
+				this.currentCanvas.manager.getHistoryManager().pushChange(new HistoryEntry(Operations.CREATE_CANVAS, currentCanvas.getLayers().indexOf(canvas), canvas, "Created Layer", ImageManager.getImageResource("ico/layers/new.png")));
+			}
+			catch (IOException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		else if(e.getSource() == btnCloneLayer)
+		{
+			Canvas canvas = new Canvas(currentCanvas.manager.getSelectedCanvas());
+			currentCanvas.manager.addLayer(canvas);
+			refillLayers();
+			this.layerList.validate();
+			this.layerList.repaint();
+			try
+			{
+				this.currentCanvas.manager.getHistoryManager().pushChange(new HistoryEntry(Operations.CREATE_CANVAS, currentCanvas.getLayers().indexOf(canvas), canvas, "Cloned Layer", ImageManager.getImageResource("ico/layers/clone.png")));
+			}
+			catch (IOException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		else if(e.getSource() == btnDeleteLayer)
+		{
+			if(this.currentCanvas.getLayers().size() > 1)
+			{
+				int lIndex = (this.layerList.getCount()-1)-this.layerList.getSelectedIndex();
+				Canvas removed = this.currentCanvas.manager.removeLayer(lIndex);
+				refillLayers();
+				this.layerList.validate();
+				this.layerList.repaint();
+				try
+				{
+					this.currentCanvas.manager.getHistoryManager().pushChange(new HistoryEntry(Operations.DELETE_CANVAS, lIndex, removed, "Removed Layer", ImageManager.getImageResource("ico/layers/delete.png")));
+				}
+				catch (IOException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 		}
 	}
 	

@@ -285,6 +285,14 @@ public class CanvasManager {
 
 	public void addLayer(Canvas canvas) {
 		cc.addLayer(canvas);
+		cc.repaint();
+	}
+
+
+	public Canvas removeLayer(int lIndex) {
+		Canvas c = cc.removeLayer(lIndex);
+		cc.repaint();
+		return c;
 	}
 	
 }

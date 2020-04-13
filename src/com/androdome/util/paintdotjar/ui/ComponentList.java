@@ -8,6 +8,8 @@ import java.awt.GridBagConstraints;
 import java.awt.LayoutManager;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -128,6 +130,10 @@ public class ComponentList extends Container implements MouseListener, Component
 			if(this.selectedIndex > -1)
 			{
 				this.list.get(selectedIndex).setBackground(this.getBackground());
+				for(FocusListener fl : this.list.get(selectedIndex).getFocusListeners())
+				{
+					fl.focusLost(new FocusEvent(this, FocusEvent.FOCUS_LOST));
+				}
 			}
 			this.selectedIndex = index;
 			this.list.get(selectedIndex).setBackground(selectedColor);

@@ -32,6 +32,7 @@ public class Canvas{
 		DataOutputStream dos = new DataOutputStream(gz);
 		dos.writeUTF(canvas.canvasName);
 		dos.writeShort(canvas.canvasOpacity);
+		dos.writeBoolean(canvas.isVisible);
 		ImageIO.write(canvas.canvasImage, "png", dos);
 		dos.close();
 		gz.close();
@@ -48,6 +49,7 @@ public class Canvas{
 		DataInputStream dis = new DataInputStream(gz);
 		String name = dis.readUTF();
 		short opacity = dis.readShort();
+		boolean isVisible = dis.readBoolean();
 		BufferedImage image = ImageIO.read(dis);
 		dis.close();
 		gz.close();
@@ -55,6 +57,7 @@ public class Canvas{
 		Canvas canvas = new Canvas(image);
 		canvas.canvasOpacity = opacity;
 		canvas.canvasName = name;
+		canvas.isVisible = isVisible;
 		return canvas;
 	}
 	
@@ -97,6 +100,8 @@ public class Canvas{
 	public Canvas(Canvas canvas) {
 		canvasImage = deepCopy(canvas.canvasImage);
 		canvasOpacity = canvas.canvasOpacity;
+		canvasName = "Duplicate of " + canvas.getName();
+		isVisible = canvas.isVisible;
 	}
 	public void apply(Canvas canvas)
 	{

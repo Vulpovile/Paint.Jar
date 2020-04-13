@@ -311,6 +311,10 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 		this.layers.add(canvas);
 	}
 
+	public Canvas removeLayer(int lIndex) {
+		return this.layers.remove(lIndex);
+	}
+
 
 
 }
