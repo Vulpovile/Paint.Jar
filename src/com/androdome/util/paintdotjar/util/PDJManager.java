@@ -166,6 +166,7 @@ public final class PDJManager extends FileFormatManager {
 			int i = 0;
 			for(Canvas c : cc.getLayers())
 			{
+				i++;
 				e = new ZipEntry(i+".bmd");
 				out.putNextEntry(e);
 				dos.writeShort(c.getOpacity());

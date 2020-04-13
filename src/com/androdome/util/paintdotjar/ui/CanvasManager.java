@@ -43,7 +43,7 @@ public class CanvasManager {
 	}
 	
 	public void setSelectedCanvas(int index) {
-		if(cc.getLayers().size() > index)
+		if(cc.getLayers().size() > index && index > -1)
 			cc.selectedIndex = index;
 	}
 	
@@ -270,6 +270,21 @@ public class CanvasManager {
 	public HistoryManager getHistoryManager() {
 		// TODO Auto-generated method stub
 		return historyManager;
+	}
+
+
+	public int getWidth() {
+		// TODO Auto-generated method stub
+		return cc.width;
+	}
+	public int getHeight() {
+		// TODO Auto-generated method stub
+		return cc.height;
+	}
+
+
+	public void addLayer(Canvas canvas) {
+		cc.addLayer(canvas);
 	}
 	
 }

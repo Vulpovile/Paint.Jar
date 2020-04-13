@@ -13,6 +13,9 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.awt.GridBagLayout;
 
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 public class ComponentList extends Container implements MouseListener, ComponentListener{
 	/**
 	 * 
@@ -21,6 +24,7 @@ public class ComponentList extends Container implements MouseListener, Component
 	private int selectedIndex = -1;
 	private Color selectedColor = new Color(121,156,216);
 	private ArrayList<Component> list = new ArrayList<Component>();
+	private ArrayList<ListSelectionListener> listeners = new ArrayList<ListSelectionListener>();
 	public ComponentList()
 	{
 		this.addComponentListener(this);
@@ -29,8 +33,20 @@ public class ComponentList extends Container implements MouseListener, Component
 		gridBagLayout.rowHeights = new int[]{0};
 		gridBagLayout.columnWeights = new double[]{};
 		gridBagLayout.rowWeights = new double[]{};
+		
 		super.setLayout(gridBagLayout);
 	}
+	
+	public boolean addListSelectionListener(ListSelectionListener lst)
+	{
+		return listeners.add(lst);
+	}
+	
+	public boolean removeListSelectionListener(ListSelectionListener lst)
+	{
+		return listeners.remove(lst);
+	}
+	
 	public final void setLayout(LayoutManager mgr)
 	{
 		throw new RuntimeException("Cannot set layout of a list");
@@ -41,34 +57,45 @@ public class ComponentList extends Container implements MouseListener, Component
 		{
 			c.removeMouseListener(this);
 		}
-		this.list = list;
-		
+		this.list.clear();
 		this.removeAll();
 		if(list.size() > 0)
 			this.selectedIndex = 0;
 		else this.selectedIndex = -1;
 		for(Component c : list)
 		{
-			c.setPreferredSize(new Dimension(200, 64));
-			c.addMouseListener(this);
-			super.add(c, getConstraints());
+			add(c);
+		}
+		this.list.get(selectedIndex).setBackground(selectedColor);
+		for(ListSelectionListener lst : listeners)
+		{
+			lst.valueChanged(new ListSelectionEvent(this, this.selectedIndex, this.selectedIndex, false));
 		}
 	}
 	public Component add(Component comp)
 	{
 		list.add(comp);
 		comp.setPreferredSize(new Dimension(200, 64));
-		
+		comp.setMinimumSize(new Dimension(0, 64));
+		comp.addMouseListener(this);
 		super.add(comp, getConstraints());
+		this.validate();
+		this.repaint();
+		if(this.getParent() != null)
+		{
+			this.getParent().validate();
+			this.getParent().repaint();
+		}
 		return comp;
 	}
 	
 	private GridBagConstraints getConstraints() {
 		GridBagConstraints consts = new GridBagConstraints();
 		consts.fill = GridBagConstraints.HORIZONTAL;
-		consts.weighty = 1.0F;
+		consts.weighty = 0.0F;
 		consts.weightx = 1.0F;
 		consts.anchor = GridBagConstraints.SOUTH;
+		consts.gridwidth = GridBagConstraints.REMAINDER;
 		return consts;
 	}
 	public int getSelectedIndex()
@@ -82,8 +109,14 @@ public class ComponentList extends Container implements MouseListener, Component
 		comp.removeMouseListener(this);
 		remove(comp);
 		if(selectedIndex > list.size()-1)
+		{
 			selectedIndex--;
-		
+			this.list.get(selectedIndex).setBackground(selectedColor);
+			for(ListSelectionListener lst : listeners)
+			{
+				lst.valueChanged(new ListSelectionEvent(this, this.selectedIndex, this.selectedIndex, false));
+			}
+		}
 	}
 	public void mouseClicked(MouseEvent e) {
 		
@@ -98,6 +131,10 @@ public class ComponentList extends Container implements MouseListener, Component
 			}
 			this.selectedIndex = index;
 			this.list.get(selectedIndex).setBackground(selectedColor);
+			for(ListSelectionListener lst : listeners)
+			{
+				lst.valueChanged(new ListSelectionEvent(this, this.selectedIndex, this.selectedIndex, false));
+			}
 		}
 	}
 	public void mouseReleased(MouseEvent e) {
@@ -125,5 +162,9 @@ public class ComponentList extends Container implements MouseListener, Component
 	public void componentHidden(ComponentEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public int getCount() {
+		return list.size();
 	}
 }

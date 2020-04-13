@@ -23,6 +23,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -81,7 +83,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JList;
 import javax.swing.Icon;
 
-public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener {
+public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener, ListSelectionListener {
 
 	/**
 	 * 
@@ -549,6 +551,8 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		btnSave.addActionListener(this);
 		btnOpen.addActionListener(this);
 		btnSaveAll.addActionListener(this);
+		layerList.addListSelectionListener(this);
+		btnNewLayer.addActionListener(this);
 		this.addWindowListener(this);
 		//KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyboardShortcutListener(this));
 	}
@@ -680,6 +684,15 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		else if(e.getSource() == mntmAbout)
 		{
 			new AboutDialog(manager).setVisible(true);
+		}
+		else if(e.getSource() == btnNewLayer)
+		{
+			Canvas canvas = new Canvas(currentCanvas.manager.getWidth(),currentCanvas.manager.getHeight());
+			canvas.setName("Layer " + currentCanvas.getLayers().size());
+			currentCanvas.manager.addLayer(canvas);
+			refillLayers();
+			this.layerList.validate();
+			this.layerList.repaint();
 		}
 	}
 	
@@ -954,6 +967,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 			contentPane.repaint();
 			setName();
 			refillLayers();
+			setHistory();
 		}
 	}
 
@@ -1063,5 +1077,16 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	public void repaintList() {
 		if(layerList != null)
 		this.layerList.repaint();
+	}
+
+	public void valueChanged(ListSelectionEvent e) {
+		if(e.getSource() == this.layerList)
+		{
+			if(this.layerList.getSelectedIndex() > -1)
+			{
+				
+				this.currentCanvas.manager.setSelectedCanvas((this.layerList.getCount()-1)-this.layerList.getSelectedIndex());
+			}
+		}
 	}
 }

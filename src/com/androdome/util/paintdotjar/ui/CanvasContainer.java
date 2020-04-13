@@ -307,6 +307,10 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 		return this.pluginManager;
 	}
 
+	void addLayer(Canvas canvas) {
+		this.layers.add(canvas);
+	}
+
 
 
 }
