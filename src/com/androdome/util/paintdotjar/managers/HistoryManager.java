@@ -1,6 +1,7 @@
 package com.androdome.util.paintdotjar.managers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.androdome.util.paintdotjar.devel.annotation.Preliminary;
@@ -33,5 +34,10 @@ public class HistoryManager {
 			historyList.remove(0);
 		}	
 		canvasContainer.setChanged(true);
+		canvasContainer.getPluginManager().getMainInterface().setHistory();
+	}
+	public Collection<HistoryEntry> getHistory() {
+		// TODO Auto-generated method stub
+		return historyList;
 	}
 }

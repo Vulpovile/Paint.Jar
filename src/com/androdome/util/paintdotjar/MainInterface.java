@@ -5,7 +5,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 
+import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -34,7 +36,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -46,6 +47,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
 import com.androdome.util.paintdotjar.managers.ClipboardImage;
+import com.androdome.util.paintdotjar.managers.HistoryEntry;
 import com.androdome.util.paintdotjar.managers.ImageManager;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 import com.androdome.util.paintdotjar.plugin.RegisteredTool;
@@ -75,6 +77,9 @@ import java.awt.event.InputEvent;
 
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JSplitPane;
+import javax.swing.JList;
+import javax.swing.Icon;
 
 public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener {
 
@@ -117,11 +122,21 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	private final JButton btnOpen = new JButton("");
 	private final JButton btnSave = new JButton("");
 	private final JButton btnSaveAll = new JButton("");
-	private final JPanel panelRight = new JPanel();
-	private final JLabel lblLayers = new JLabel("Layers");
-	private final JPanel panel_3 = new JPanel();
-	private final JPanel panel_4 = new DetatchablePanel();
-	private final JLabel lblThisIsA = new JLabel("This is a test of a detatchable panel");
+	private final DetatchablePanel layerPanel = new DetatchablePanel("Layers");
+	private final ComponentList layerList = new ComponentList();
+	private final JPanel panelHistoryContainer = new JPanel();
+	private final DetatchablePanel historyPanel = new DetatchablePanel("History");
+	private final JScrollPane historyScrollPane = new JScrollPane();
+	private final JPanel layerButtonBar = new JPanel();
+	private final JPanel historyButtonBar = new JPanel();
+	final int ico_size = 17;
+	private final JButton btnNewLayer = new JButton(ImageManager.getScaledImageIconResource("ico/layers/new.png", ico_size, ico_size, Image.SCALE_SMOOTH));
+	private final JButton btnCloneLayer = new JButton(ImageManager.getScaledImageIconResource("ico/layers/clone.png", ico_size, ico_size, Image.SCALE_SMOOTH));
+	private final JButton btnDeleteLayer = new JButton(ImageManager.getScaledImageIconResource("ico/layers/delete.png", ico_size, ico_size, Image.SCALE_SMOOTH));
+	private final JList historyList = new JList();
+	private final JButton btnUndo = new JButton(ImageManager.getScaledImageIconResource("ico/history/undo.png", ico_size, ico_size, Image.SCALE_SMOOTH));
+	private final JButton btnRedo = new JButton(ImageManager.getScaledImageIconResource("ico/history/redo.png", ico_size, ico_size, Image.SCALE_SMOOTH));
+	
 	
 	/**
 	 * Launch the application.
@@ -241,6 +256,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		icons.add(ImageManager.getImageResource("ico/PaintJar32.png"));
 		icons.add(ImageManager.getImageResource("ico/PaintJar64.png"));
 		icons.add(ImageManager.getImageResource("ico/PaintJar128.png"));
+		historyScrollPane.setPreferredSize(new Dimension(200, -1));
 		PaintUtils.setAppIcons(this, icons);
 		setTitle("Paint.jar");
 		manager.loadPlugins();
@@ -378,17 +394,17 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		
 		contentPane.add(currentCanvas, BorderLayout.CENTER);
 		
-		JPanel panel_1 = new JPanel();
-		contentPane.add(panel_1, BorderLayout.SOUTH);
-		panel_1.setLayout(new BorderLayout(0, 0));
+		JPanel panelBottom = new JPanel();
+		contentPane.add(panelBottom, BorderLayout.SOUTH);
+		panelBottom.setLayout(new BorderLayout(0, 0));
 		
 		
-		panel_1.add(colorPanel, BorderLayout.WEST);
+		panelBottom.add(colorPanel, BorderLayout.WEST);
 		
-		JPanel panel_2 = new JPanel();
-		panel_1.add(panel_2, BorderLayout.EAST);
-		panel_2.setLayout(new BorderLayout(0, 0));
-		panel_2.add(sliderScale);
+		JPanel panelScale = new JPanel();
+		panelBottom.add(panelScale, BorderLayout.EAST);
+		panelScale.setLayout(new BorderLayout(0, 0));
+		panelScale.add(sliderScale);
 		
 		
 		sliderScale.setValue(100);
@@ -400,31 +416,120 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		sliderScale.setSnapToTicks(true);
 		
 
-		panel_2.add(chckbxTickMultiples, BorderLayout.WEST);
+		panelScale.add(chckbxTickMultiples, BorderLayout.WEST);
 		
 		txtScale = new JTextField();
 		txtScale.setText("100.0%");
-		panel_2.add(txtScale, BorderLayout.EAST);
+		panelScale.add(txtScale, BorderLayout.EAST);
 		txtScale.setColumns(6);
 		
 		contentPane.add(rightSidePanel, BorderLayout.EAST);
 		rightSidePanel.setLayout(new BorderLayout(0, 0));
 		
+		
 		rightSidePanel.add(btnHidePanel, BorderLayout.WEST);
-		btnHidePanel.setPreferredSize(new Dimension(10,-1));
+		btnHidePanel.setPreferredSize(new Dimension(20,-1));
+		final int ICON_SIZE = 10;
+		btnHidePanel.setIcon(ImageManager.getScaledImageIconResource("ico/right.png", ICON_SIZE, ICON_SIZE, Image.SCALE_SMOOTH));
+		
+		
+
+		JPanel panelLayerContainer = new JPanel();
+		JScrollPane layerScrollPane = new JScrollPane();
+		final JPanel panelRight = new JPanel();
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setResizeWeight(0.5);
+		btnHidePanel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(panelRight.isVisible())
+					btnHidePanel.setIcon(ImageManager.getScaledImageIconResource("ico/left.png", ICON_SIZE, ICON_SIZE, Image.SCALE_SMOOTH));
+				else btnHidePanel.setIcon(ImageManager.getScaledImageIconResource("ico/right.png", ICON_SIZE, ICON_SIZE, Image.SCALE_SMOOTH));
+				panelRight.setVisible(!panelRight.isVisible());
+				rightSidePanel.revalidate();
+				rightSidePanel.repaint();
+			}
+		});
 		
 		rightSidePanel.add(panelRight, BorderLayout.EAST);
 		panelRight.setLayout(new BorderLayout(0, 0));
+		panelRight.add(splitPane, BorderLayout.CENTER);
+		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		splitPane.setLeftComponent(panelLayerContainer);
+		panelLayerContainer.setLayout(new BorderLayout(0, 0));
+		layerPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		panelLayerContainer.add(layerPanel);
+		layerPanel.setLayout(new BorderLayout(0, 0));
+		JLabel lblLayers = new JLabel("Layers              ");
+		lblLayers.setIcon(ImageManager.getScaledImageIconResource("ico/layers/clone.png", 16, 16, Image.SCALE_SMOOTH));
 		
-		panelRight.add(lblLayers, BorderLayout.NORTH);
-		panel_3.setBorder(new EmptyBorder(5, 5, 5, 5));
+		layerPanel.add(lblLayers, BorderLayout.NORTH);
 		
-		panelRight.add(panel_3, BorderLayout.CENTER);
-		panel_3.setLayout(new BorderLayout(0, 0));
+		layerPanel.add(layerScrollPane, BorderLayout.CENTER);
 		
-		panel_3.add(panel_4, BorderLayout.CENTER);
 		
-		panel_4.add(lblThisIsA);
+		layerScrollPane.setViewportView(layerList);
+		
+		layerPanel.add(layerButtonBar, BorderLayout.SOUTH);
+		final Dimension PREF_BSIZE = new Dimension(25, 25);
+		btnNewLayer.setPreferredSize(PREF_BSIZE);
+		layerButtonBar.add(btnNewLayer);
+		btnCloneLayer.setPreferredSize(PREF_BSIZE);
+		layerButtonBar.add(btnCloneLayer);
+		btnDeleteLayer.setPreferredSize(PREF_BSIZE);
+		layerButtonBar.add(btnDeleteLayer);
+		
+		splitPane.setRightComponent(panelHistoryContainer);
+		panelHistoryContainer.setLayout(new BorderLayout(0, 0));
+		historyPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		
+		panelHistoryContainer.add(historyPanel, BorderLayout.CENTER);
+		historyPanel.setLayout(new BorderLayout(0, 0));
+		
+
+		JLabel lblHistory = new JLabel("History");
+		lblHistory.setIcon(ImageManager.getScaledImageIconResource("ico/history/clock.png", 16, 16, Image.SCALE_SMOOTH));
+		historyPanel.add(lblHistory, BorderLayout.NORTH);
+		
+		historyPanel.add(historyScrollPane, BorderLayout.CENTER);
+		
+		
+		
+		historyList.setCellRenderer(new DefaultListCellRenderer() {
+		    /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+		    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+		        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+		        if(value instanceof HistoryEntry)
+		        {
+		        	HistoryEntry he = (HistoryEntry)value;
+		        	label.setText(he.message);
+		        	if(he.changeIcon != null)
+		        	{
+		        		label.setIcon(new ImageIcon(he.changeIcon.getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
+		        	}
+		        	else
+		        	{
+		        		label.setIcon(ImageManager.getScaledImageIconResource("ico/unknown.png", 16, 16, Image.SCALE_SMOOTH));
+		        	}
+		        }
+		        return label;
+		    }
+		});
+		
+		
+		historyScrollPane.setViewportView(historyList);
+		
+		historyPanel.add(historyButtonBar, BorderLayout.SOUTH);
+		btnUndo.setPreferredSize(new Dimension(25, 25));
+		
+		historyButtonBar.add(btnUndo);
+		btnRedo.setPreferredSize(new Dimension(25, 25));
+		
+		historyButtonBar.add(btnRedo);
 		
 		chckbxTickMultiples.addChangeListener(this);
 		sliderScale.addChangeListener(this);
@@ -856,11 +961,16 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		ArrayList<Component> lip = new ArrayList<Component>();
 		for(Canvas c : currentCanvas.getLayers())
 		{
-			lip.add(new LayerInformationPanel());
+			lip.add(new LayerInformationPanel(currentCanvas, currentCanvas.getLayers().indexOf(c), c));
 		}
 		Collections.reverse(lip);
 		//TODO add layer list
-		//this.layerList.setListData(lip);
+		this.layerList.setListData(lip);
+	}
+	
+	public void setHistory()
+	{
+		this.historyList.setListData(currentCanvas.manager.getHistoryManager().getHistory().toArray());
 	}
 
 	public void setName() {
@@ -948,5 +1058,10 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 
 	public MainInterfaceAbstractor getAbstractor() {
 		return abstractor;
+	}
+
+	public void repaintList() {
+		if(layerList != null)
+		this.layerList.repaint();
 	}
 }

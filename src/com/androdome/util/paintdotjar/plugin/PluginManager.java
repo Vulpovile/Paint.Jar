@@ -138,6 +138,7 @@ public final class PluginManager {
 		{
 			RegisteredTool regtool = new RegisteredTool(tool, plugin, icon, name);
 			tools.add(regtool);
+			tool.setToolHandle(regtool);
 			mainui.retool();
 			return regtool;
 		}

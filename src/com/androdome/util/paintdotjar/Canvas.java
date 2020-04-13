@@ -60,7 +60,7 @@ public class Canvas{
 	
 	private BufferedImage canvasImage;
 	private short canvasOpacity = 255;
-	private String canvasName = "";
+	private String canvasName = "Background";
 	public Canvas(int w, int h)
 	{
 	    GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();

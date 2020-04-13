@@ -4,14 +4,16 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.LayoutManager;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.awt.GridBagLayout;
 
-import javax.swing.BoxLayout;
-
-public class ComponentList extends Container implements MouseListener{
+public class ComponentList extends Container implements MouseListener, ComponentListener{
 	/**
 	 * 
 	 */
@@ -21,7 +23,13 @@ public class ComponentList extends Container implements MouseListener{
 	private ArrayList<Component> list = new ArrayList<Component>();
 	public ComponentList()
 	{
-		super.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		this.addComponentListener(this);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[] {1};
+		gridBagLayout.rowHeights = new int[]{0};
+		gridBagLayout.columnWeights = new double[]{};
+		gridBagLayout.rowWeights = new double[]{};
+		super.setLayout(gridBagLayout);
 	}
 	public final void setLayout(LayoutManager mgr)
 	{
@@ -43,17 +51,26 @@ public class ComponentList extends Container implements MouseListener{
 		{
 			c.setPreferredSize(new Dimension(200, 64));
 			c.addMouseListener(this);
-			super.add(c);
+			super.add(c, getConstraints());
 		}
 	}
 	public Component add(Component comp)
 	{
 		list.add(comp);
 		comp.setPreferredSize(new Dimension(200, 64));
-		super.add(comp);
+		
+		super.add(comp, getConstraints());
 		return comp;
 	}
 	
+	private GridBagConstraints getConstraints() {
+		GridBagConstraints consts = new GridBagConstraints();
+		consts.fill = GridBagConstraints.HORIZONTAL;
+		consts.weighty = 1.0F;
+		consts.weightx = 1.0F;
+		consts.anchor = GridBagConstraints.SOUTH;
+		return consts;
+	}
 	public int getSelectedIndex()
 	{
 		return selectedIndex;
@@ -92,6 +109,20 @@ public class ComponentList extends Container implements MouseListener{
 		
 	}
 	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void componentResized(ComponentEvent e) {
+	}
+	public void componentMoved(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void componentShown(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void componentHidden(ComponentEvent e) {
 		// TODO Auto-generated method stub
 		
 	}

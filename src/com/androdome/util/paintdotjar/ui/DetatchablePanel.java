@@ -33,6 +33,10 @@ public class DetatchablePanel extends JPanel implements WindowListener, MouseMot
 		addMouseListener(this);
 		addMouseMotionListener(this);
 	}
+	public DetatchablePanel(String string) {
+		this();
+		this.setName(string);
+	}
 	Border trueBorder = null;
 	JDialog containerFrame = null;
 	Container parentComponent = null;
@@ -72,6 +76,7 @@ public class DetatchablePanel extends JPanel implements WindowListener, MouseMot
 	}
 	public void attatch()
 	{
+		canAttatch = false;
 		if(trueBorder != null)
 		{
 			this.setBorder(trueBorder);
@@ -150,6 +155,7 @@ public class DetatchablePanel extends JPanel implements WindowListener, MouseMot
 	}
 	private int threshold = 5;
 	boolean canAttatch = false;
+	long systemAttTimeout = 0;
 	public void mouseDragged(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();
@@ -160,8 +166,11 @@ public class DetatchablePanel extends JPanel implements WindowListener, MouseMot
 				Point oldLoc = this.getLocationOnScreen();
 				Point oldMV = new Point(movePoint.x, movePoint.y);
 				detatch();
-				containerFrame.setLocation(oldLoc.x, oldLoc.y);
+				System.out.println(oldLoc.x-containerFrame.getInsets().left);
+				System.out.println(oldLoc.x);
+				containerFrame.setLocation(oldLoc.x-containerFrame.getInsets().left, oldLoc.y-containerFrame.getInsets().right);
 				movePoint = oldMV;
+				systemAttTimeout = System.currentTimeMillis();
 				try
 				{
 					Robot robot = new Robot();
@@ -195,8 +204,7 @@ public class DetatchablePanel extends JPanel implements WindowListener, MouseMot
             containerFrame.setLocation(X, Y);
 			
 			//containerFrame.setLocation(absx-x-containerFrame.getInsets().left, absy-y-containerFrame.getInsets().top);
-			System.out.println("Doing!");
-			if(parentComponent != null)
+			if(systemAttTimeout < System.currentTimeMillis()-1000 && parentComponent != null)
 			{
 				int wx = parentComponent.getLocationOnScreen().x;
 				int wy = parentComponent.getLocationOnScreen().y;

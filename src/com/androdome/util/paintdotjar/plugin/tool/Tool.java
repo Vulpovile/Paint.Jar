@@ -10,11 +10,13 @@ import javax.swing.JToolBar;
 
 import com.androdome.util.paintdotjar.devel.annotation.Preliminary;
 import com.androdome.util.paintdotjar.plugin.JavaPlugin;
+import com.androdome.util.paintdotjar.plugin.RegisteredTool;
 import com.androdome.util.paintdotjar.properties.PropertyFilled;
 import com.androdome.util.paintdotjar.ui.CanvasManager;
 
 public abstract class Tool extends PropertyFilled{
 	private final JavaPlugin plugin;
+	RegisteredTool tool = null;
 	public Tool(JavaPlugin plugin)
 	{
 		this.plugin = plugin;
@@ -28,8 +30,12 @@ public abstract class Tool extends PropertyFilled{
 	 * Returns the temporary {@link JToolBar} that can be used by the tool.
 	 * <b>This toolbar is cleared every time another tool is selected.</b>
 	 */
-	public final JToolBar getToolbar() {
+	protected final JToolBar getToolbar() {
 		return plugin.getMainInterface().getToolToolbar();
+	}
+	protected final RegisteredTool getToolHandle()
+	{
+		return tool;
 	}
 	public abstract void onSelect(CanvasManager manager);
 	public abstract void onDeselect(CanvasManager manager);
@@ -47,5 +53,9 @@ public abstract class Tool extends PropertyFilled{
 	public abstract void onMouseWheelMove(MouseWheelEvent e, CanvasManager manager);
 	@Preliminary
 	public abstract void onCanvasPaint(Graphics2D g2d, Rectangle innerFrame, CanvasManager manager);
+
+	public final void setToolHandle(RegisteredTool regtool) {
+		tool = regtool;
+	}
 	
 }

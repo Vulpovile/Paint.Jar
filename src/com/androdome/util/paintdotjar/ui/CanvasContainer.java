@@ -136,6 +136,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 		super.repaint();
 		if(containerButton != null)
 		containerButton.repaint();
+		pluginManager.getMainInterface().repaintList();
 	}
 	public void paintComponent(Graphics g)
 	{
@@ -298,6 +299,10 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	public String getFormatName()
 	{
 		return formatname;
+	}
+
+	public PluginManager getPluginManager() {
+		return this.pluginManager;
 	}
 
 
