@@ -750,37 +750,49 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	}
 	
 	boolean showSaveDialog(CanvasContainer cc) {
-		JFileChooser chooser = createChooser(false);
-		chooser.setSelectedFile(cc.getRelatedFile());
-		if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+		while(true)
 		{
-			File newFile = chooser.getSelectedFile();
-			String ext = "png";
-			PropertyManager.setProperty("last-dir", chooser.getCurrentDirectory().getAbsolutePath());
-			FileFormatManager ffm = (FileFormatManager)chooser.getFileFilter();
-			if(!(ffm instanceof FallbackFormatManager))
+			JFileChooser chooser = createChooser(false);
+			chooser.setSelectedFile(cc.getRelatedFile());
+			if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
 			{
-				
-				if(!newFile.getName().trim().toLowerCase().endsWith("."+ffm.extension))
+				File newFile = chooser.getSelectedFile();
+				String ext = "png";
+				PropertyManager.setProperty("last-dir", chooser.getCurrentDirectory().getAbsolutePath());
+				FileFormatManager ffm = (FileFormatManager)chooser.getFileFilter();
+				if(!(ffm instanceof FallbackFormatManager))
 				{
-					newFile = new File(newFile.getAbsoluteFile()+"."+ffm.extension);
+					
+					if(!newFile.getName().trim().toLowerCase().endsWith("."+ffm.extension))
+					{
+						newFile = new File(newFile.getAbsoluteFile()+"."+ffm.extension);
+					}
+					ext = ffm.extension;
 				}
-				ext = ffm.extension;
+				if(cc.getLayers().size() > 1 && !ffm.supportsLayers)
+				{
+					int res = JOptionPane.showOptionDialog(null, "Your image has layers but the format you have chosen does not support layers.\r\nDo you want to flatten the image, or save as a different format?", "Format Issue", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Flatten and Save", "Save as other format", "Cancel"}, 0);
+					if(res == 1)
+						continue;
+					else if(res == 2)
+						return false;
+				}
+				if(ffm.saveCanvas(cc, newFile, this.abstractor))
+				{
+					cc.setFormatName(ext);
+					cc.setChanged(false);
+					cc.setRelatedFile(newFile);
+					setName();
+					return true;
+				}
+				else if(!ffm.doesDisplayError())
+				{
+					JOptionPane.showMessageDialog(null, "The file could not be saved!", "Error", JOptionPane.ERROR_MESSAGE);
+					
+				}
 			}
-			if(ffm.saveCanvas(cc, newFile, this.abstractor))
-			{
-				cc.setFormatName(ext);
-				cc.setChanged(false);
-				cc.setRelatedFile(newFile);
-				setName();
-				return true;
-			}
-			else if(!ffm.doesDisplayError())
-			{
-				JOptionPane.showMessageDialog(null, "The file could not be saved!", "Error", JOptionPane.ERROR_MESSAGE);
-			}
+			return false;
 		}
-		return false;
 	}
 	boolean saveNoDialog(CanvasContainer cc) {
 		FileFormatManager ffm = null;
@@ -792,6 +804,14 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		}
 		else
 		{
+			if(cc.getLayers().size() > 1 && !ffm.supportsLayers)
+			{
+				int res = JOptionPane.showOptionDialog(null, "Your image has layers but the format you have chosen does not support layers.\r\nDo you want to flatten the image, or save as a different format?", "Format Issue", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Flatten and Save", "Save as other format", "Cancel"}, 0);
+				if(res == 1)
+					showSaveDialog(cc);
+				else if(res == 2)
+					return false;
+			}
 			if(ffm.saveCanvas(cc, cc.getRelatedFile(), this.abstractor))
 			{
 				cc.setChanged(false);
