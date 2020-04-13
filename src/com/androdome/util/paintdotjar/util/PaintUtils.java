@@ -16,6 +16,7 @@ import com.androdome.util.paintdotjar.ui.CanvasContainer;
 
 public class PaintUtils {
 	public final static String DEFAULT_EXT = "png";
+	public final static String LAYER_DEFAULT_EXT = "pdj";
 	public final static FallbackFormatManager FALLBACK = new FallbackFormatManager();
 	public final static File getJarDir()
 	{

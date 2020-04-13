@@ -695,7 +695,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	}
 	
 	
-	public JFileChooser createChooser(boolean containsAll)
+	public JFileChooser createChooser(boolean containsAll, boolean hasLayers)
 	{
 		JFileChooser chooser = new JFileChooser();
 		if(containsAll)
@@ -710,7 +710,9 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 			FileFormatManager ffm = PaintUtils.registeredHandlers.get(key);
 			if(ffm == null)
 				continue;
-			if(!containsAll && key.trim().equalsIgnoreCase(PaintUtils.DEFAULT_EXT))
+			if(!containsAll && (!hasLayers && key.trim().equalsIgnoreCase(PaintUtils.DEFAULT_EXT)))
+				chooser.setFileFilter(ffm);
+			else if(!containsAll && (hasLayers && key.trim().equalsIgnoreCase(PaintUtils.LAYER_DEFAULT_EXT)))
 				chooser.setFileFilter(ffm);
 			else chooser.addChoosableFileFilter(ffm);
 		}
@@ -720,7 +722,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 
 	CanvasContainer showOpenDialog()
 	{
-		JFileChooser chooser = createChooser(true);
+		JFileChooser chooser = createChooser(true, false);
 		chooser.setMultiSelectionEnabled(true);
 		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
 		{
@@ -752,7 +754,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	boolean showSaveDialog(CanvasContainer cc) {
 		while(true)
 		{
-			JFileChooser chooser = createChooser(false);
+			JFileChooser chooser = createChooser(false, cc.getLayers().size() > 1);
 			chooser.setSelectedFile(cc.getRelatedFile());
 			if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
 			{
