@@ -61,6 +61,7 @@ public class Canvas{
 	private BufferedImage canvasImage;
 	private short canvasOpacity = 255;
 	private String canvasName = "Background";
+	private boolean isVisible = true;;
 	public Canvas(int w, int h)
 	{
 	    GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -140,5 +141,15 @@ public class Canvas{
 	public void setName(String name) {
 		// TODO Auto-generated method stub
 		canvasName = name;
+	}
+
+	public void setVisible(boolean isVisible)
+	{
+		this.isVisible = isVisible;
+	}
+	
+	public boolean isVisible() {
+		// TODO Auto-generated method stub
+		return isVisible ;
 	}
 }

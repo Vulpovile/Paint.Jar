@@ -1,14 +1,11 @@
 package com.androdome.util.paintdotjar.util;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Properties;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
@@ -26,7 +23,7 @@ import com.androdome.util.paintdotjar.util.FileFormatManager;
 
 public final class PDJManager extends FileFormatManager {
 
-	
+	public static final float META_TYPE = 1.1F;
 	
 	public PDJManager()
 	{
@@ -50,28 +47,21 @@ public final class PDJManager extends FileFormatManager {
 	public CanvasContainer loadCanvas(File file, MainInterfaceAbstractor mia) {
 		// TODO Auto-generated method stub
 		ZipInputStream in = null;
-		BufferedReader br = null;
+		Properties prop;
 		try {
 			in = new ZipInputStream(new GZIPInputStream(new FileInputStream(file)));
-			DataInputStream dis = new DataInputStream(in);
-			br = new BufferedReader(new InputStreamReader(dis));
 			int width = 0;
 			int height = 0;
 			int lcount = 0;
 			ZipEntry ze = in.getNextEntry();
 			if(ze == null)
 				throw new InvalidMetadataException("Metadata file not found");
-			String metaline;
 			try{
-				while((metaline = br.readLine()) != null)
-				{
-					if(metaline.startsWith("WIDTH"))
-						width = Integer.parseInt(metaline.replace("WIDTH ", ""));
-					else if(metaline.startsWith("HEIGHT"))
-						height = Integer.parseInt(metaline.replace("HEIGHT ", ""));
-					else if(metaline.startsWith("LCOUNT"))
-							lcount = Integer.parseInt(metaline.replace("LCOUNT ", ""));
-				}
+				prop = new Properties();
+				prop.load(in);
+				width = Integer.parseInt(prop.getProperty("width"));
+				height = Integer.parseInt(prop.getProperty("height"));
+				lcount = Integer.parseInt(prop.getProperty("lcount"));
 			}
 			catch(NumberFormatException ex)
 			{
@@ -92,8 +82,11 @@ public final class PDJManager extends FileFormatManager {
 				ze = in.getNextEntry();
 				if(ze == null)
 					throw new InvalidMetadataException("Layer metadata not found");
-				short layerOpacity = dis.readShort();
-				String layername = dis.readUTF();
+				prop = new Properties();
+				prop.load(in);
+				short layerOpacity = Short.parseShort(prop.getProperty("opacity"));
+				String layername = prop.getProperty("name");
+				boolean isVisible = Boolean.parseBoolean(prop.getProperty("is-visible"));
 				in.closeEntry();
 				ze = in.getNextEntry();
 				if(ze == null)
@@ -105,18 +98,12 @@ public final class PDJManager extends FileFormatManager {
 				Canvas canvas = new Canvas(img);
 				canvas.setOpacity(layerOpacity);
 				canvas.setName(layername);
+				canvas.setVisible(isVisible);
 				cc.getLayers().add(canvas);
 			}
 			if(in != null)
 				try {
 					in.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			if(br != null)
-				try {
-					br.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -131,18 +118,16 @@ public final class PDJManager extends FileFormatManager {
 
 			e.printStackTrace();
 		}
+		catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(null, "Failed to load:" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
+			e.printStackTrace();
+		}
 		finally
 		{
 			if(in != null)
 				try {
 					in.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			if(br != null)
-				try {
-					br.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -155,22 +140,27 @@ public final class PDJManager extends FileFormatManager {
 	public boolean saveCanvas(CanvasContainer cc, File file, MainInterfaceAbstractor mia) {
 		try {
 			ZipOutputStream out = new ZipOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
-			DataOutputStream dos = new DataOutputStream(out);
 			ZipEntry e = new ZipEntry("basemeta.mta");
 			out.putNextEntry(e);
+			Properties prop = new Properties();
 			out.write("PDJ METADATA TYPE 1\r\n".getBytes());
-			out.write(("WIDTH " + cc.getImageWidth() + "\r\n").getBytes("US-ASCII"));
-			out.write(("HEIGHT " + cc.getImageHeight() + "\r\n").getBytes("US-ASCII"));
-			out.write(("LCOUNT " + cc.getLayers().size() + "\r\n").getBytes("US-ASCII"));
+			prop.setProperty("meta-type", String.valueOf(META_TYPE));
+			prop.setProperty("width", String.valueOf(cc.getImageWidth()));
+			prop.setProperty("height",  String.valueOf(cc.getImageHeight()));
+			prop.setProperty("lcount",  String.valueOf(cc.getLayers().size()));
+			prop.store(out, "PDJ Metadata Type " + META_TYPE);
 			out.closeEntry();
 			int i = 0;
 			for(Canvas c : cc.getLayers())
 			{
 				i++;
-				e = new ZipEntry(i+".bmd");
+				e = new ZipEntry(i+".lmd");
 				out.putNextEntry(e);
-				dos.writeShort(c.getOpacity());
-				dos.writeUTF(c.getName());
+				prop = new Properties();
+				prop.setProperty("opacity", String.valueOf(c.getOpacity()));
+				prop.setProperty("name", c.getName());
+				prop.setProperty("is-visible", String.valueOf(c.isVisible()));
+				prop.store(out, "PDJ Layer Metadata Type " + META_TYPE);
 				out.closeEntry();
 				e = new ZipEntry(i+".png");
 				out.putNextEntry(e);
