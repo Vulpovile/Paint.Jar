@@ -137,6 +137,8 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	private final JList historyList = new JList();
 	private final JButton btnUndo = new JButton(ImageManager.getScaledImageIconResource("ico/history/undo.png", ico_size, ico_size, Image.SCALE_SMOOTH));
 	private final JButton btnRedo = new JButton(ImageManager.getScaledImageIconResource("ico/history/redo.png", ico_size, ico_size, Image.SCALE_SMOOTH));
+	private final JMenuItem mntmUndo = new JMenuItem("Undo");
+	private final JMenuItem mntmRedo = new JMenuItem("Redo");
 	
 	
 	/**
@@ -335,6 +337,12 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		menuBar.add(mnEdit);
 		
 		mnEdit.add(mntmS2CB);
+		mntmUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+		mntmUndo.setIcon(ImageManager.getScaledImageIconResource("ico/history/undo.png", 16, 16, Image.SCALE_SMOOTH));
+		mnEdit.add(mntmUndo);
+		mntmRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
+		mntmRedo.setIcon(ImageManager.getScaledImageIconResource("ico/history/redo.png", 16, 16, Image.SCALE_SMOOTH));
+		mnEdit.add(mntmRedo);
 		
 		JMenu mnSettings = new JMenu("Settings");
 		mnSettings.setMnemonic('E');
@@ -504,6 +512,8 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 			@Override
 		    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 		        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+		        if(list.getSelectedIndex() > -1 && list.getSelectedIndex() < index)
+		        	label.setBackground(Color.LIGHT_GRAY);
 		        if(value instanceof HistoryEntry)
 		        {
 		        	HistoryEntry he = (HistoryEntry)value;
@@ -554,6 +564,8 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		btnNewLayer.addActionListener(this);
 		btnDeleteLayer.addActionListener(this);
 		btnCloneLayer.addActionListener(this);
+		btnUndo.addActionListener(this);
+		btnRedo.addActionListener(this);
 		this.addWindowListener(this);
 		//KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyboardShortcutListener(this));
 	}
@@ -740,6 +752,29 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 					e1.printStackTrace();
 				}
 			}
+		}
+		else if(e.getSource() == btnUndo || e.getSource() == mntmUndo)
+		{
+			this.currentCanvas.manager.getHistoryManager().undo();
+			this.historyList.setSelectedIndex((this.currentCanvas.manager.getHistoryManager().getHistory().size()-1)-this.currentCanvas.manager.getHistoryManager().getHistoryIndex());
+			refillLayers();
+			this.layerList.validate();
+			this.layerList.repaint();
+		}
+		else if(e.getSource() == btnRedo || e.getSource() == mntmRedo)
+		{
+			this.currentCanvas.manager.getHistoryManager().redo();
+			if(this.currentCanvas.manager.getHistoryManager().getHistoryIndex() > -1)
+				this.historyList.setSelectedIndex((this.currentCanvas.manager.getHistoryManager().getHistory().size()-1)-this.currentCanvas.manager.getHistoryManager().getHistoryIndex());
+			else
+			{
+				System.out.println("Set selected");
+				this.historyList.setSelectedIndex(-1);
+				this.historyList.clearSelection();
+			}
+			refillLayers();
+			this.layerList.validate();
+			this.layerList.repaint();
 		}
 	}
 	

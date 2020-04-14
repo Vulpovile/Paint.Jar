@@ -86,7 +86,7 @@ public class CanvasManager {
 			{
 				try
 				{
-					historyManager.pushChange(new HistoryEntry(HistoryManager.Operations.APPLY_CANVAS, cc.tempIndex, canvas, message, icon));
+					historyManager.pushChange(new HistoryEntry(HistoryManager.Operations.CHANGE_CANVAS, cc.tempIndex, canvas, message, icon));
 				}
 				catch (IOException e)
 				{

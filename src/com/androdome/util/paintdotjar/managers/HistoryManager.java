@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.androdome.util.paintdotjar.Canvas;
 import com.androdome.util.paintdotjar.devel.annotation.Preliminary;
 import com.androdome.util.paintdotjar.ui.CanvasContainer;
 
@@ -11,13 +12,15 @@ public class HistoryManager {
 	@Preliminary
 	private final CanvasContainer canvasContainer;
 	private List<HistoryEntry> historyList = new ArrayList<HistoryEntry>();
+	int histIndex = -1;
+	List<Canvas> currentEntry = null;
 	public static enum Operations
 	{
 		DELETE_CANVAS,
 		CREATE_CANVAS,
-		APPLY_CANVAS,
+		MERGE_CANVAS,
 		CHANGE_CANVAS,
-		SWAP_CANVASES,
+		SWAP_CANVAS,
 	}
 	@Preliminary
 	public HistoryManager(CanvasContainer cc)
@@ -28,6 +31,17 @@ public class HistoryManager {
 		if(entry == null)
 			return;
 		// TODO Auto-generated method stub
+		
+		if(histIndex > -1)
+		{
+			currentEntry = null;
+			while(histIndex > -1)
+			{
+				historyList.remove(historyList.size()-1);
+				histIndex--;
+			}
+		}
+		
 		historyList.add(entry);
 		if(historyList.size() > 50)
 		{
@@ -39,5 +53,96 @@ public class HistoryManager {
 	public Collection<HistoryEntry> getHistory() {
 		// TODO Auto-generated method stub
 		return historyList;
+	}
+	
+	public void undo()
+	{
+		System.out.println("Undoing!!!");
+		if(histIndex < historyList.size()-1)
+		{
+			histIndex++;
+			if(currentEntry == null)
+			{
+				currentEntry = new ArrayList<Canvas>();
+				for(Canvas c : canvasContainer.getLayers())
+				{
+					currentEntry.add(c);
+				}
+			}
+			HistoryEntry he = historyList.get(historyList.size()-1-histIndex);
+			switch(he.operation)
+			{
+				case CHANGE_CANVAS:
+					canvasContainer.getLayers().set(he.index, he.getCanvas());
+					break;
+				case DELETE_CANVAS:
+					canvasContainer.getLayers().add(he.index, he.getCanvas());
+					break;
+				case CREATE_CANVAS:
+					canvasContainer.getLayers().remove(he.index);
+					break;
+				case MERGE_CANVAS:
+					canvasContainer.getLayers().set(he.index, he.getCanvas());
+					canvasContainer.getLayers().add(he.index2, he.getCanvas2());
+					break;
+				case SWAP_CANVAS:
+					canvasContainer.getLayers().set(he.index, he.getCanvas());
+					canvasContainer.getLayers().set(he.index2, he.getCanvas2());
+					break;
+				default:
+					break;
+					
+			}
+			canvasContainer.repaint();
+		}
+	}
+	public void redo()
+	{
+		if(histIndex > -1)
+		{
+			histIndex--;
+			if(histIndex == -1)
+			{
+				canvasContainer.getLayers().clear();
+				for(Canvas c : currentEntry)
+				{
+					canvasContainer.getLayers().add(c);
+				}
+				currentEntry.clear();
+				currentEntry = null;
+			}
+			else
+			{
+				HistoryEntry he = historyList.get(historyList.size()-1-histIndex);
+				switch(he.operation)
+				{
+					case CHANGE_CANVAS:
+						canvasContainer.getLayers().set(he.index, he.getCanvas());
+						break;
+					case DELETE_CANVAS:
+						canvasContainer.getLayers().remove(he.index);
+						break;
+					case CREATE_CANVAS:
+						canvasContainer.getLayers().add(he.index, he.getCanvas());
+						break;
+					case MERGE_CANVAS:
+						Canvas canvas = he.getCanvas();
+						canvas.apply(he.getCanvas2());
+						canvasContainer.getLayers().set(he.index, canvas);
+						canvasContainer.getLayers().remove(he.index2);
+						break;
+					case SWAP_CANVAS:
+						canvasContainer.getLayers().set(he.index, he.getCanvas2());
+						canvasContainer.getLayers().set(he.index2, he.getCanvas());
+						break;
+					default:
+						break;
+				}
+			}
+			canvasContainer.repaint();
+		}
+	}
+	public int getHistoryIndex() {
+		return histIndex;
 	}
 }
