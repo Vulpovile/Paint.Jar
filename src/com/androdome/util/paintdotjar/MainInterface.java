@@ -83,8 +83,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JList;
 
 public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener, ListSelectionListener {
-
-	/**
+	//TODO Split into segments
+	/** 
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
