@@ -10,7 +10,9 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -103,13 +105,24 @@ public class ColorBar extends JPanel implements ActionListener, MouseListener, W
 		return secondary;
 	}
 
+	public Frame getParentFrame()
+	{
+		Container parentContainer = getParent();
+		while(parentContainer != null)
+		{
+			if(parentContainer instanceof Frame)
+				return (Frame)parentContainer;
+			parentContainer = parentContainer.getParent();
+		}
+		return null;
+	}
 	public void actionPerformed(ActionEvent arg0) {
 		if(arg0.getSource() == btnColorDialog && dialog == null)
 		{
 			dialog = new ColorDialog(this);
 			dialog.setVisible(true);
 			dialog.setLocationRelativeTo(btnColorDialog);
-			dialog.setAlwaysOnTop(true);
+			//dialog.setAlwaysOnTop(true);
 			dialog.addWindowListener(this);
 		}
 	}

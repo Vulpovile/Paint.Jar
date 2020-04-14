@@ -24,7 +24,7 @@ public class DetatchablePanel extends JPanel implements WindowListener, MouseMot
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	public DetatchablePanel()
 	{
 		super();
@@ -54,8 +54,7 @@ public class DetatchablePanel extends JPanel implements WindowListener, MouseMot
 		if(containerFrame == null)
 		{
 			parentComponent = this.getParent();
-			containerFrame = new JDialog(this.getParentFrame());
-			containerFrame.setName(this.getName());
+			containerFrame = new JDialog(this.getParentFrame(), this.getName());
 			containerFrame.addWindowListener(this);
 			this.setPreferredSize(this.getSize());
 			containerFrame.setLocationRelativeTo(this);

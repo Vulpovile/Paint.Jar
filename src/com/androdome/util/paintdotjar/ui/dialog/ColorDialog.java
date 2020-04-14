@@ -60,13 +60,15 @@ public class ColorDialog extends JDialog implements ActionListener, ChangeListen
 	private JTextField txtRGBDec;
 	private JTextField txtRGBHex;
 	
+
+	
 	//Really inefficient dialog, TODO spend time improving
 	
 	public ColorDialog(ColorBar colorBar) {
+		super(colorBar.getParentFrame(), "Colors");
 		
 		setResizable(false);
 		bar = colorBar;
-		setTitle("Colors");
 		setBounds(100, 100, 498, 412);
 		getContentPane().setLayout(null);
 		/*{

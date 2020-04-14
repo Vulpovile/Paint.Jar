@@ -28,6 +28,10 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -81,8 +85,9 @@ import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JSplitPane;
 import javax.swing.JList;
+import javax.swing.JScrollBar;
 
-public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener, ListSelectionListener {
+public final class MainInterface extends JFrame implements ActionListener, ChangeListener, KeyListener, WindowListener, ListSelectionListener, ComponentListener, AdjustmentListener {
 	//TODO Split into segments
 	/** 
 	 * 
@@ -139,6 +144,9 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	private final JButton btnRedo = new JButton(ImageManager.getScaledImageIconResource("ico/history/redo.png", ico_size, ico_size, Image.SCALE_SMOOTH));
 	private final JMenuItem mntmUndo = new JMenuItem("Undo");
 	private final JMenuItem mntmRedo = new JMenuItem("Redo");
+	private final JPanel canvasContainerPanel = new JPanel();
+	private final JScrollBar scrollBarVert = new JScrollBar();
+	private final JScrollBar scrollBarHoriz = new JScrollBar();
 	
 	
 	/**
@@ -270,7 +278,6 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		contentPane.setBorder(null);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		addOpenCanvas(currentCanvas, true);
 		JPanel panel = new JPanel();
 		panel.setBorder(null);
 		contentPane.add(panel, BorderLayout.NORTH);
@@ -399,9 +406,6 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		contentPane.add(toolBox, BorderLayout.WEST);
 		toolBox.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		toolBox.setPreferredSize(new Dimension((icoimg+4+5)*2+5,0));
-		
-		
-		contentPane.add(currentCanvas, BorderLayout.CENTER);
 		
 		JPanel panelBottom = new JPanel();
 		contentPane.add(panelBottom, BorderLayout.SOUTH);
@@ -541,6 +545,17 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		btnRedo.setPreferredSize(new Dimension(25, 25));
 		
 		historyButtonBar.add(btnRedo);
+		canvasContainerPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		
+		contentPane.add(canvasContainerPanel, BorderLayout.CENTER);
+		canvasContainerPanel.setLayout(new BorderLayout(0, 0));
+		
+		canvasContainerPanel.add(scrollBarVert, BorderLayout.EAST);
+		scrollBarHoriz.setOrientation(JScrollBar.HORIZONTAL);
+		
+		canvasContainerPanel.add(scrollBarHoriz, BorderLayout.SOUTH);
+		canvasContainerPanel.add(currentCanvas, BorderLayout.CENTER);
+		addOpenCanvas(currentCanvas, true);
 		
 		chckbxTickMultiples.addChangeListener(this);
 		sliderScale.addChangeListener(this);
@@ -566,6 +581,9 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 		btnCloneLayer.addActionListener(this);
 		btnUndo.addActionListener(this);
 		btnRedo.addActionListener(this);
+		toolBarTool.addComponentListener(this);
+		scrollBarVert.addAdjustmentListener(this);
+		scrollBarHoriz.addAdjustmentListener(this);
 		this.addWindowListener(this);
 		//KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyboardShortcutListener(this));
 	}
@@ -1054,7 +1072,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	{
 		if(openCanvases.contains(cc))
 		{
-			contentPane.remove(currentCanvas);
+			canvasContainerPanel.remove(currentCanvas);
 			for(Component c : openPanel.getComponents())
 			{
 				if(c instanceof ContainerToggleButton)
@@ -1066,9 +1084,10 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 				}
 			}
 			currentCanvas = cc;
-			contentPane.add(currentCanvas);
-			contentPane.revalidate();
-			contentPane.repaint();
+			canvasContainerPanel.add(currentCanvas);
+			canvasContainerPanel.revalidate();
+			canvasContainerPanel.repaint();
+			reScrollbar();
 			setName();
 			refillLayers();
 			setHistory();
@@ -1155,7 +1174,7 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 	}
 
 	public void windowClosed(WindowEvent e) {
-		System.exit(0);
+		//System.exit(0);
 	}
 
 	public void windowIconified(WindowEvent e) {
@@ -1191,6 +1210,49 @@ public final class MainInterface extends JFrame implements ActionListener, Chang
 				
 				this.currentCanvas.manager.setSelectedCanvas((this.layerList.getCount()-1)-this.layerList.getSelectedIndex());
 			}
+		}
+	}
+
+	public void componentResized(ComponentEvent e) {
+		this.currentCanvas.revalidate();
+		this.currentCanvas.repaint();
+	}
+
+	public void componentMoved(ComponentEvent e) {
+		this.currentCanvas.revalidate();
+		this.currentCanvas.repaint();
+	}
+
+	public void componentShown(ComponentEvent e) {
+		this.currentCanvas.revalidate();
+		this.currentCanvas.repaint();
+	}
+
+	public void componentHidden(ComponentEvent e) {
+		this.currentCanvas.revalidate();
+		this.currentCanvas.repaint();
+	}
+
+	public void reScrollbar() {
+		scrollBarHoriz.setMinimum((int) -(currentCanvas.getImageWidth()*currentCanvas.getScale()));
+		scrollBarHoriz.setMaximum((int) (currentCanvas.getImageWidth()*currentCanvas.getScale()));
+		scrollBarVert.setMinimum((int) -(currentCanvas.getImageHeight()*currentCanvas.getScale()));
+		scrollBarVert.setMaximum((int) (currentCanvas.getImageHeight()*currentCanvas.getScale()));
+		currentCanvas.repaint();
+	}
+	long timeout = 0;
+	public void adjustmentValueChanged(AdjustmentEvent e) {
+		if((!e.getValueIsAdjusting() || timeout < System.currentTimeMillis()-32) && e.getSource() == scrollBarHoriz)
+		{
+			currentCanvas.setXOffset(-scrollBarHoriz.getValue());
+			repaint();
+			timeout = System.currentTimeMillis();
+		}
+		else if((!e.getValueIsAdjusting() || timeout < System.currentTimeMillis()-32) && e.getSource() == scrollBarVert)
+		{
+			currentCanvas.setYOffset(-scrollBarVert.getValue());
+			repaint();
+			timeout = System.currentTimeMillis();
 		}
 	}
 }

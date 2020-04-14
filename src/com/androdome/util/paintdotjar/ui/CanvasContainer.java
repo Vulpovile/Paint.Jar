@@ -19,8 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
-import javax.swing.border.BevelBorder;
-
 import com.androdome.util.paintdotjar.Canvas;
 import com.androdome.util.paintdotjar.plugin.PluginManager;
 
@@ -46,12 +44,16 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	private PluginManager pluginManager;
 	private Shape selection = null;
 	public CanvasManager manager = new CanvasManager(this);
+
 	
 	public enum CanvasRenderMode {
 		NORMAL,
 		TILEDRAW
 	}
 	
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public CanvasContainer(PluginManager mi, ColorBar color) {
 		this(INIT_WIDTH, INIT_HEIGHT, mi, color);
 	}
@@ -62,7 +64,6 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 		addListeners();
 		pluginManager = mi;
 		colors = color;
-		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 	}
 	
 	public CanvasContainer(int width, int height, PluginManager mi, ColorBar color) {
@@ -92,6 +93,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	public void setScale(float scale)
 	{
 		this.scale = scale;
+		pluginManager.getMainInterface().reScrollbar();
 	}
 	public float getScale()
 	{
@@ -142,7 +144,7 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	}
 	public void paintComponent(Graphics g)
 	{
-		//super.paintComponent(g);
+		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D)g;
 		g2d.setColor(this.getBackground());
 		g2d.fillRect(0, 0, getWidth(), getHeight());
@@ -314,6 +316,15 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 	public Canvas removeLayer(int lIndex) {
 		return this.layers.remove(lIndex);
 	}
+
+	public void setXOffset(int i) {
+		this.xoffset = i;
+	}
+	public void setYOffset(int i) {
+		this.yoffset = i;
+	}
+
+	
 
 
 

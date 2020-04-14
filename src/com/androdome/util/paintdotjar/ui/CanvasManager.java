@@ -104,7 +104,7 @@ public class CanvasManager {
 		cc.tempIndex = -1;
 		cc.temporaryCanvas = null;
 	}
-	
+	//TODO fix function, does not work right
 	public Point getLocationOnGraphics(Point point)
 	{
 		//if(canvasRenderMode == CanvasRenderMode.NORMAL)
