@@ -109,8 +109,8 @@ public class CanvasManager {
 	{
 		//if(canvasRenderMode == CanvasRenderMode.NORMAL)
 		//{
-			float x = (cc.getWidth()/cc.getScale()/2 - (cc.width)/2 + cc.xoffset);
-			float y = (cc.getHeight()/cc.getScale()/2 - (cc.height)/2 + cc.yoffset);
+			float x = (cc.getWidth()/cc.getScale()/2 - (cc.width)/2 + cc.xoffset/cc.getScale());
+			float y = (cc.getHeight()/cc.getScale()/2 - (cc.height)/2 + cc.yoffset/cc.getScale());
 			return new Point((int)Math.floor(point.x/cc.getScale() - x), (int)Math.floor(point.y/cc.getScale() - y));
 		//}
 		/*else
