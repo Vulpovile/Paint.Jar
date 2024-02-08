@@ -188,6 +188,20 @@ public class CanvasContainer extends JComponent implements MouseListener, MouseM
 		}
 		else 
 		{
+
+			int pscale = 10;
+			g.setClip(x-1, y-1, (int)(width*scale)+2, (int)(height*scale)+2);
+			for(int i = 0; i <= this.width*scale; i+=pscale)
+			{
+				for(int j = 0; j <= this.height*scale; j+=pscale)
+				{
+					if((i+j)%(pscale*2) == 0)
+						g.setColor(new Color(240,240,240));
+					else g.setColor(Color.WHITE);
+					g.fillRect(i+x-1, j+y-1, pscale, pscale);
+				}
+			}
+			
 			g.setColor(Color.BLACK);
 			for(int i = 0; i < layers.size(); i++)
 			{
